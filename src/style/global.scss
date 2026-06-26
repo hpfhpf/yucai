@@ -1,0 +1,153 @@
+page {
+    color: var(--app-text-primary);
+    background: var(--app-bg);
+    font-size: 28rpx;
+}
+
+view,
+text,
+scroll-view,
+swiper,
+swiper-item {
+    box-sizing: border-box;
+}
+
+.page {
+    min-height: 100vh;
+}
+
+.nav {
+    height: var(--nav-total);
+}
+
+.nav__bar {
+    position: relative;
+    height: var(--nav-bar);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav__title {
+    color: var(--app-text-primary);
+}
+
+.nav__back {
+    position: absolute;
+    left: 10rpx;
+    width: 76rpx;
+    height: 76rpx;
+    border-radius: 999rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav__back--pressed {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.nav__backIcon {
+    width: 18rpx;
+    height: 18rpx;
+    border-left: 4rpx solid rgba(0, 0, 0, 0.72);
+    border-bottom: 4rpx solid rgba(0, 0, 0, 0.72);
+    transform: rotate(45deg);
+    margin-left: 6rpx;
+}
+
+.nav__capsule {
+    position: absolute;
+    right: var(--capsule-right);
+    width: var(--capsule-width);
+    height: var(--capsule-height);
+    border-radius: 999rpx;
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.card,
+.recordCard,
+.jobCard,
+.quick__card,
+.sectionCard {
+    border-radius: var(--app-radius-lg);
+}
+
+.card--pressed,
+.recordCard--pressed,
+.jobCard--pressed,
+.quick__card--pressed {
+    transform: scale(0.99);
+    opacity: 0.96;
+}
+
+.u-card {
+    border-radius: var(--app-radius-lg);
+    background: var(--app-surface);
+    box-shadow: var(--app-shadow-card);
+}
+
+.u-pill {
+    border-radius: var(--app-radius-pill);
+}
+
+.u-text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wd-input__value,
+.wd-input__body {
+    height: 100%;
+}
+
+.search {
+    .wd-input {
+        background: transparent !important;
+
+        .wd-input__inner {
+            color: #fff !important;
+            padding-left: 8rpx !important;
+        }
+
+        .uni-input-placeholder {
+            color: rgba(255, 255, 255, 0.72) !important;
+            font-size: 28rpx;
+        }
+    }
+}
+
+.empty-space {
+    height: 200rpx;
+}
+
+.globInput {
+    border: 1px solid #EDEDED;
+    padding: 0 12rpx;
+}
+
+.calendarCell {
+    padding: 0 !important;
+}
+
+.globTextArea {
+    .wd-textarea__inner {
+        padding: 16rpx 0;
+    }
+}
+
+.composerInput {
+    width: 100%;
+    color: #333;
+    display: flex;
+    flex: 1;
+    background: transparent !important;
+}
+
+.mine-menu-group {
+    margin-top: 24rpx;
+    border-radius: 22rpx;
+    overflow: hidden;
+    box-shadow: var(--mine-shadow-soft);
+}

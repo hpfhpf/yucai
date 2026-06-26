@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "global-notify": "./components/GlobalNotify/index"
+  }
+}

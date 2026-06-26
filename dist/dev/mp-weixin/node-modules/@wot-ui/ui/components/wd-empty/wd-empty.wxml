@@ -1,0 +1,1 @@
+<view class="{{d}}" style="{{e}}"><block wx:if="{{$slots.image}}"><slot name="image"></slot></block><block wx:else><wd-icon wx:if="{{a}}" u-i="2ca8e582-0" bind:__l="__l" u-p="{{a}}"></wd-icon></block><view wx:if="{{b}}" class="wd-empty__text">{{c}}</view><slot name="bottom"/></view>

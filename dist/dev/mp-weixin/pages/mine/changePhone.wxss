@@ -1,0 +1,130 @@
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.page.data-v-e94e42ee {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #dfe7ff 0%, #edf2ff 260rpx, #eaf0ff 560rpx, #eaf0ff 100%);
+}
+.content.data-v-e94e42ee {
+  position: relative;
+  padding: 44rpx 26rpx 44rpx;
+}
+.headline.data-v-e94e42ee {
+  padding: 10rpx 6rpx 22rpx;
+}
+.headline__title.data-v-e94e42ee {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.88);
+}
+.headline__sub.data-v-e94e42ee {
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  color: rgba(0, 0, 0, 0.34);
+}
+.form.data-v-e94e42ee {
+  display: flex;
+  flex-direction: column;
+  gap: 22rpx;
+}
+.row.data-v-e94e42ee {
+  height: 102rpx;
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 16rpx 44rpx rgba(30, 60, 140, 0.08);
+  display: flex;
+  align-items: center;
+  padding: 0 18rpx;
+  gap: 14rpx;
+}
+.row__icon.data-v-e94e42ee {
+  width: 46rpx;
+  height: 46rpx;
+  border-radius: 10rpx;
+  background: rgba(30, 91, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.row__main.data-v-e94e42ee {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  min-width: 0;
+}
+.phonePrefix.data-v-e94e42ee {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding-right: 12rpx;
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+}
+.phonePrefix__text.data-v-e94e42ee {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.62);
+}
+.row__right.data-v-e94e42ee {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.captcha.data-v-e94e42ee {
+  width: 150rpx;
+  height: 56rpx;
+  border-radius: 12rpx;
+  background: rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.captcha--pressed.data-v-e94e42ee {
+  opacity: 0.92;
+}
+.captcha__text.data-v-e94e42ee {
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+  color: rgba(0, 0, 0, 0.46);
+}
+.data-v-e94e42ee .sms-btn {
+  width: 190rpx !important;
+  height: 70rpx !important;
+  border-radius: 16rpx !important;
+  font-size: 28rpx !important;
+  font-weight: 800 !important;
+}
+.actions.data-v-e94e42ee {
+  margin-top: 44rpx;
+}
+.data-v-e94e42ee .save-btn {
+  height: 92rpx !important;
+  font-size: 34rpx !important;
+  font-weight: 800 !important;
+  background: linear-gradient(90deg, #1e67ff 0%, #1d54ff 62%, #1a47ff 100%) !important;
+  box-shadow: 0 18rpx 42rpx rgba(12, 72, 255, 0.22) !important;
+}

@@ -1,0 +1,1 @@
+"use strict";const e=require("./common/vendor.js");Math||o();const o=()=>"./components/GlobalNotify/index.js",n=e.defineComponent({__name:"KuRoot",setup:o=>(e.useQueue(),(e,o)=>({}))});wx.createComponent(n);

@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "wd-button": "../../../node-modules/@wot-ui/ui/components/wd-button/wd-button",
+    "wd-form": "../../../node-modules/@wot-ui/ui/components/wd-form/wd-form",
+    "wd-form-item": "../../../node-modules/@wot-ui/ui/components/wd-form-item/wd-form-item",
+    "wd-textarea": "../../../node-modules/@wot-ui/ui/components/wd-textarea/wd-textarea",
+    "header-nav": "../../../components/HeaderNav"
+  }
+}

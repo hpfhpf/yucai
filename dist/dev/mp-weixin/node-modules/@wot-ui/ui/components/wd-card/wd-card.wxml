@@ -1,0 +1,1 @@
+<view class="{{h}}" style="{{i}}"><view wx:if="{{a}}" class="{{d}}"><block wx:if="{{$slots.title}}"><slot name="title"></slot></block><block wx:else><text wx:if="{{b}}" class="wd-card__title-text">{{c}}</text></block></view><view class="{{e}}"><slot></slot></view><view wx:if="{{f}}" class="{{g}}"><slot name="footer"></slot></view></view>

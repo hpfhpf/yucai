@@ -1,0 +1,11 @@
+{
+  "component": true,
+  "usingComponents": {
+    "wd-calendar-view": "../wd-calendar-view/wd-calendar-view",
+    "wd-action-sheet": "../wd-action-sheet/wd-action-sheet",
+    "wd-button": "../wd-button/wd-button",
+    "wd-tabs": "../wd-tabs/wd-tabs",
+    "wd-tab": "../wd-tab/wd-tab",
+    "wd-tag": "../wd-tag/wd-tag"
+  }
+}

@@ -1,0 +1,234 @@
+import {
+  Injectable, NotFoundException, ForbiddenException, BadRequestException,
+} from '@nestjs/common';
+import { PrismaService } from '../common/prisma/prisma.service';
+import { CreateJobDto, UpdateJobDto, ListJobsQuery, DeliverJobDto } from './dto/jobs.dto';
+
+@Injectable()
+export class JobsService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  // ===== 职位列表（求职者浏览）=====
+
+  async list(query: ListJobsQuery) {
+    const { page = 1, limit = 10, city, keyword, nature, companyId } = query;
+    const skip = (page - 1) * limit;
+
+    const where: any = { status: 'ACTIVE' };
+    if (city) where.city = city;
+    if (nature) where.nature = nature;
+    if (companyId) where.companyId = companyId;
+    if (keyword) {
+      where.OR = [
+        { title: { contains: keyword } },
+        { description: { contains: keyword } },
+      ];
+    }
+
+    const [total, items] = await Promise.all([
+      this.prisma.job.count({ where }),
+      this.prisma.job.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          company: { select: { id: true, name: true, logoUrl: true, isVerified: true } },
+        },
+      }),
+    ]);
+
+    return {
+      total,
+      page,
+      limit,
+      items,
+    };
+  }
+
+  // ===== 职位详情 =====
+
+  async detail(id: string) {
+    const job = await this.prisma.job.findUnique({
+      where: { id },
+      include: {
+        company: true,
+        recruiter: {
+          select: { id: true, realName: true, department: true },
+        },
+      },
+    });
+    if (!job) throw new NotFoundException('职位不存在');
+
+    // 浏览量 +1（异步，不阻塞响应）
+    this.prisma.job.update({ where: { id }, data: { viewCount: { increment: 1 } } }).catch(() => {});
+
+    return job;
+  }
+
+  // ===== 发布职位（招聘官）=====
+
+  async create(userId: string, dto: CreateJobDto) {
+    const recruiter = await this.prisma.recruiter.findUnique({ where: { userId } });
+    if (!recruiter) throw new ForbiddenException('请先完成招聘官认证');
+
+    const companyId = dto.companyId ?? recruiter.companyId;
+    if (!companyId) throw new BadRequestException('未关联企业，无法发布职位');
+
+    return this.prisma.job.create({
+      data: {
+        recruiterId: recruiter.id,
+        companyId,
+        title: dto.title,
+        nature: dto.nature as any ?? 'FULL_TIME',
+        province: dto.province,
+        city: dto.city,
+        district: dto.district,
+        address: dto.address,
+        salaryRange: dto.salaryRange,
+        minDegree: dto.minDegree as any ?? 'ANY',
+        minExpYears: dto.minExpYears ?? 0,
+        description: dto.description,
+        perks: dto.perks ?? null,
+      },
+    });
+  }
+
+  // ===== 更新职位（招聘官本人）=====
+
+  async update(userId: string, id: string, dto: UpdateJobDto) {
+    const job = await this.findOwnJob(userId, id);
+    return this.prisma.job.update({
+      where: { id: job.id },
+      data: {
+        title: dto.title,
+        nature: dto.nature as any,
+        province: dto.province,
+        city: dto.city,
+        district: dto.district,
+        address: dto.address,
+        salaryRange: dto.salaryRange,
+        minDegree: dto.minDegree as any,
+        minExpYears: dto.minExpYears,
+        description: dto.description,
+        perks: dto.perks !== undefined ? dto.perks : undefined,
+      },
+    });
+  }
+
+  // ===== 下架职位（招聘官本人）=====
+
+  async close(userId: string, id: string) {
+    const job = await this.findOwnJob(userId, id);
+    await this.prisma.job.update({ where: { id: job.id }, data: { status: 'CLOSED' } });
+    return { success: true };
+  }
+
+  // ===== 投递简历 =====
+
+  async deliver(userId: string, jobId: string, dto: DeliverJobDto) {
+    const job = await this.prisma.job.findUnique({ where: { id: jobId } });
+    if (!job || job.status !== 'ACTIVE') throw new NotFoundException('职位不存在或已关闭');
+
+    const existing = await this.prisma.delivery.findUnique({
+      where: { userId_jobId: { userId, jobId } },
+    });
+    if (existing) throw new BadRequestException('已投递过该职位');
+
+    return this.prisma.delivery.create({
+      data: { userId, jobId, creditAuthorized: dto.creditAuthorized },
+    });
+  }
+
+  // ===== 我的投递记录 =====
+
+  async myDeliveries(userId: string, page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    const [total, items] = await Promise.all([
+      this.prisma.delivery.count({ where: { userId } }),
+      this.prisma.delivery.findMany({
+        where: { userId },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          job: {
+            include: { company: { select: { id: true, name: true, logoUrl: true } } },
+          },
+        },
+      }),
+    ]);
+    return { total, page, limit, items };
+  }
+
+  // ===== 收藏 / 取消收藏 =====
+
+  async favorite(userId: string, jobId: string) {
+    const job = await this.prisma.job.findUnique({ where: { id: jobId } });
+    if (!job) throw new NotFoundException('职位不存在');
+
+    await this.prisma.jobFavorite.upsert({
+      where: { userId_jobId: { userId, jobId } },
+      create: { userId, jobId },
+      update: {},
+    });
+    return { success: true };
+  }
+
+  async unfavorite(userId: string, jobId: string) {
+    await this.prisma.jobFavorite.deleteMany({ where: { userId, jobId } });
+    return { success: true };
+  }
+
+  // ===== 我的收藏列表 =====
+
+  async myFavorites(userId: string, page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    const [total, items] = await Promise.all([
+      this.prisma.jobFavorite.count({ where: { userId } }),
+      this.prisma.jobFavorite.findMany({
+        where: { userId },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          job: {
+            include: { company: { select: { id: true, name: true, logoUrl: true } } },
+          },
+        },
+      }),
+    ]);
+    return { total, page, limit, items };
+  }
+
+  // ===== 招聘官已发布职位列表 =====
+
+  async myPostedJobs(userId: string, page = 1, limit = 10) {
+    const recruiter = await this.prisma.recruiter.findUnique({ where: { userId } });
+    if (!recruiter) return { total: 0, page, limit, items: [] };
+
+    const skip = (page - 1) * limit;
+    const [total, items] = await Promise.all([
+      this.prisma.job.count({ where: { recruiterId: recruiter.id } }),
+      this.prisma.job.findMany({
+        where: { recruiterId: recruiter.id },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
+    return { total, page, limit, items };
+  }
+
+  // ===== 内部工具 =====
+
+  private async findOwnJob(userId: string, jobId: string) {
+    const recruiter = await this.prisma.recruiter.findUnique({ where: { userId } });
+    if (!recruiter) throw new ForbiddenException('无权限');
+
+    const job = await this.prisma.job.findUnique({ where: { id: jobId } });
+    if (!job) throw new NotFoundException('职位不存在');
+    if (job.recruiterId !== recruiter.id) throw new ForbiddenException('无权操作他人职位');
+    return job;
+  }
+}

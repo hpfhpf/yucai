@@ -1,0 +1,13 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "wd-toast": "../../node-modules/@wot-ui/ui/components/wd-toast/wd-toast",
+    "wd-cell-group": "../../node-modules/@wot-ui/ui/components/wd-cell-group/wd-cell-group",
+    "wd-cell": "../../node-modules/@wot-ui/ui/components/wd-cell/wd-cell",
+    "wd-icon": "../../node-modules/@wot-ui/ui/components/wd-icon/wd-icon",
+    "wd-card": "../../node-modules/@wot-ui/ui/components/wd-card/wd-card",
+    "wd-tag": "../../node-modules/@wot-ui/ui/components/wd-tag/wd-tag",
+    "header-nav": "../../components/HeaderNav"
+  }
+}

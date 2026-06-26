@@ -1,0 +1,15 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "wd-button": "../../node-modules/@wot-ui/ui/components/wd-button/wd-button",
+    "wd-checkbox": "../../node-modules/@wot-ui/ui/components/wd-checkbox/wd-checkbox",
+    "wd-datetime-picker": "../../node-modules/@wot-ui/ui/components/wd-datetime-picker/wd-datetime-picker",
+    "wd-cell-group": "../../node-modules/@wot-ui/ui/components/wd-cell-group/wd-cell-group",
+    "wd-cell": "../../node-modules/@wot-ui/ui/components/wd-cell/wd-cell",
+    "wd-input": "../../node-modules/@wot-ui/ui/components/wd-input/wd-input",
+    "wd-card": "../../node-modules/@wot-ui/ui/components/wd-card/wd-card",
+    "wd-upload": "../../node-modules/@wot-ui/ui/components/wd-upload/wd-upload",
+    "header-nav": "../../components/HeaderNav"
+  }
+}

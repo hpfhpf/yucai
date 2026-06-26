@@ -1,0 +1,75 @@
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.data-v-596dda72:root,
+page.data-v-596dda72 {
+  --app-bg: #eef3ff;
+  --app-bg-soft: #eef4ff;
+  --app-surface: rgba(255, 255, 255, 0.96);
+  --app-surface-strong: rgba(255, 255, 255, 0.98);
+  --app-surface-muted: rgba(255, 255, 255, 0.92);
+  --app-text-primary: rgba(0, 0, 0, 0.86);
+  --app-text-secondary: rgba(0, 0, 0, 0.56);
+  --app-text-muted: rgba(0, 0, 0, 0.36);
+  --app-line: rgba(0, 0, 0, 0.06);
+  --app-line-strong: rgba(0, 0, 0, 0.1);
+  --app-primary: #1e5bff;
+  --app-primary-alt: #2a67ff;
+  --app-accent: #ff7a00;
+  --app-shadow-card: 0 16rpx 44rpx rgba(30, 60, 140, 0.1);
+  --app-shadow-card-strong: 0 18rpx 54rpx rgba(18, 70, 190, 0.18);
+  --app-radius-xs: 10rpx;
+  --app-radius-sm: 14rpx;
+  --app-radius-md: 18rpx;
+  --app-radius-lg: 22rpx;
+  --app-radius-pill: 999rpx;
+  --app-timing-fast: 0.18s;
+  --app-timing-base: 0.24s;
+  --app-ease-standard: ease;
+}
+.page.data-v-596dda72 {
+  min-height: 100vh;
+  background: var(--app-bg-soft);
+  display: flex;
+  flex-direction: column;
+}
+.scroll.data-v-596dda72 {
+  flex: 1 1 auto;
+}
+.content.data-v-596dda72 {
+  padding: 22rpx 26rpx 0;
+  box-sizing: border-box;
+}
+.card.data-v-596dda72 {
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-card);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+.btnWrap.data-v-596dda72 {
+  margin-top: 26rpx;
+  padding: 0 6rpx;
+}

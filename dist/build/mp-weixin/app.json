@@ -1,0 +1,46 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/index",
+    "pages/message/chatList",
+    "pages/message/chatRoom",
+    "pages/message/index",
+    "pages/mine/certificate",
+    "pages/mine/changePhone",
+    "pages/mine/index",
+    "pages/mine/jobCollection",
+    "pages/mine/setting",
+    "pages/mine/submitted",
+    "pages/mine/verification",
+    "pages/recommendation/index",
+    "pages/recommendation/insert",
+    "pages/recruiter/index",
+    "pages/recruiter/jobPosting",
+    "pages/recruiter/registration",
+    "pages/recruiter/reset",
+    "pages/recruiter/resumeCenter",
+    "pages/recruiter/talents",
+    "pages/recruiter/verificationPhone",
+    "pages/seeker/index",
+    "pages/recommendation/detail/company",
+    "pages/recommendation/detail/index",
+    "pages/recommendation/position/index",
+    "pages/seeker/resumeCenter/Information",
+    "pages/seeker/resumeCenter/education",
+    "pages/seeker/resumeCenter/index",
+    "pages/seeker/resumeCenter/job",
+    "pages/seeker/resumeCenter/project",
+    "pages/seeker/resumeCenter/selfDesc",
+    "pages/seeker/resumeCenter/workCertification"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "russ-uniapp",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "usingComponents": {
+    "global-ku-root": "/KuRoot"
+  }
+}

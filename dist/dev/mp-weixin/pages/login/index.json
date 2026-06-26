@@ -1,0 +1,7 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "wd-input": "../../node-modules/@wot-ui/ui/components/wd-input/wd-input"
+  }
+}

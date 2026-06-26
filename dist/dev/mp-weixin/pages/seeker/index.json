@@ -1,0 +1,11 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "wd-tag": "../../node-modules/@wot-ui/ui/components/wd-tag/wd-tag",
+    "wd-button": "../../node-modules/@wot-ui/ui/components/wd-button/wd-button",
+    "wd-input": "../../node-modules/@wot-ui/ui/components/wd-input/wd-input",
+    "bottom-nav": "../../components/BottomNav",
+    "header-nav": "../../components/HeaderNav"
+  }
+}

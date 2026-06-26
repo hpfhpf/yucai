@@ -1,0 +1,1 @@
+<view class="{{j}}"><year-panel wx:if="{{a}}" class="r" u-r="yearPanelRef" bindchange="{{c}}" u-i="699e873c-0" bind:__l="__l" u-p="{{d}}"/><month-panel wx:else class="r" u-r="monthPanelRef" bindchange="{{f}}" bindpickstart="{{g}}" bindpickend="{{h}}" u-i="699e873c-1" bind:__l="__l" u-p="{{i||''}}"/></view>

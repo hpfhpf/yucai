@@ -1,0 +1,70 @@
+@mixin NotifyColor($Color, $BgColor) {
+  background-color: $BgColor;
+  color: $Color;
+}
+
+@mixin app-page-shell($bg: var(--app-bg)) {
+  min-height: 100vh;
+  background: $bg;
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin app-nav-base {
+  height: var(--nav-total);
+  flex: 0 0 auto;
+}
+
+@mixin app-nav-bar-base {
+  position: relative;
+  height: var(--nav-bar);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin app-nav-back-base {
+  position: absolute;
+  left: 10rpx;
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin app-nav-back-icon-base {
+  width: 18rpx;
+  height: 18rpx;
+  border-left: 4rpx solid rgba(0, 0, 0, 0.72);
+  border-bottom: 4rpx solid rgba(0, 0, 0, 0.72);
+  transform: rotate(45deg);
+  margin-left: 6rpx;
+}
+
+@mixin app-nav-capsule-base {
+  position: absolute;
+  right: var(--capsule-right);
+  width: var(--capsule-width);
+  height: var(--capsule-height);
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(12rpx);
+}
+
+@mixin app-card-base($radius: var(--app-radius-lg), $bg: var(--app-surface), $shadow: var(--app-shadow-card)) {
+  border-radius: $radius;
+  background: $bg;
+  box-shadow: $shadow;
+}
+
+@mixin app-pressable-base {
+  transition: transform var(--app-timing-fast) var(--app-ease-standard), opacity var(--app-timing-fast) var(--app-ease-standard);
+}
+
+@mixin app-pressable-active($scale: 0.99, $opacity: 0.96) {
+  transform: scale($scale);
+  opacity: $opacity;
+}

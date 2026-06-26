@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "wd-cell": "../wd-cell/wd-cell"
+  }
+}

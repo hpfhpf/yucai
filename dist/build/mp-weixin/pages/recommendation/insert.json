@@ -1,0 +1,14 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "wd-datetime-picker": "../../node-modules/@wot-ui/ui/components/wd-datetime-picker/wd-datetime-picker",
+    "wd-button": "../../node-modules/@wot-ui/ui/components/wd-button/wd-button",
+    "wd-radio-group": "../../node-modules/@wot-ui/ui/components/wd-radio-group/wd-radio-group",
+    "wd-radio": "../../node-modules/@wot-ui/ui/components/wd-radio/wd-radio",
+    "wd-textarea": "../../node-modules/@wot-ui/ui/components/wd-textarea/wd-textarea",
+    "wd-cell-group": "../../node-modules/@wot-ui/ui/components/wd-cell-group/wd-cell-group",
+    "wd-cell": "../../node-modules/@wot-ui/ui/components/wd-cell/wd-cell",
+    "header-nav": "../../components/HeaderNav"
+  }
+}

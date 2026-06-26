@@ -1,0 +1,14 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "wd-button": "../../../node-modules/@wot-ui/ui/components/wd-button/wd-button",
+    "wd-form": "../../../node-modules/@wot-ui/ui/components/wd-form/wd-form",
+    "wd-textarea": "../../../node-modules/@wot-ui/ui/components/wd-textarea/wd-textarea",
+    "wd-calendar": "../../../node-modules/@wot-ui/ui/components/wd-calendar/wd-calendar",
+    "wd-cell": "../../../node-modules/@wot-ui/ui/components/wd-cell/wd-cell",
+    "wd-form-item": "../../../node-modules/@wot-ui/ui/components/wd-form-item/wd-form-item",
+    "wd-input": "../../../node-modules/@wot-ui/ui/components/wd-input/wd-input",
+    "header-nav": "../../../components/HeaderNav"
+  }
+}

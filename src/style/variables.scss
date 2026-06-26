@@ -1,0 +1,46 @@
+:root,
+page {
+  --app-bg: #eef3ff;
+  --app-bg-soft: #eef4ff;
+  --app-surface: rgba(255, 255, 255, 0.96);
+  --app-surface-strong: rgba(255, 255, 255, 0.98);
+  --app-surface-muted: rgba(255, 255, 255, 0.92);
+  --app-text-primary: rgba(0, 0, 0, 0.86);
+  --app-text-secondary: rgba(0, 0, 0, 0.56);
+  --app-text-muted: rgba(0, 0, 0, 0.36);
+  --app-line: rgba(0, 0, 0, 0.06);
+  --app-line-strong: rgba(0, 0, 0, 0.1);
+  --app-primary: #1e5bff;
+  --app-primary-alt: #2a67ff;
+  --app-accent: #ff7a00;
+  --app-shadow-card: 0 16rpx 44rpx rgba(30, 60, 140, 0.1);
+  --app-shadow-card-strong: 0 18rpx 54rpx rgba(18, 70, 190, 0.18);
+  --app-radius-xs: 10rpx;
+  --app-radius-sm: 14rpx;
+  --app-radius-md: 18rpx;
+  --app-radius-lg: 22rpx;
+  --app-radius-pill: 999rpx;
+  --app-timing-fast: 0.18s;
+  --app-timing-base: 0.24s;
+  --app-ease-standard: ease;
+}
+
+$app-color-primary: #1e5bff;
+$app-color-primary-alt: #2a67ff;
+$app-color-accent: #ff7a00;
+$app-bg: #eef3ff;
+$app-bg-soft: #eef4ff;
+$app-text-primary: rgba(0, 0, 0, 0.86);
+$app-text-secondary: rgba(0, 0, 0, 0.56);
+$app-text-muted: rgba(0, 0, 0, 0.36);
+$app-line: rgba(0, 0, 0, 0.06);
+$app-line-strong: rgba(0, 0, 0, 0.1);
+$app-card-bg: rgba(255, 255, 255, 0.96);
+$app-card-bg-muted: rgba(255, 255, 255, 0.92);
+$app-shadow-card: 0 16rpx 44rpx rgba(30, 60, 140, 0.1);
+$app-shadow-card-strong: 0 18rpx 54rpx rgba(18, 70, 190, 0.18);
+$app-radius-xs: 10rpx;
+$app-radius-sm: 14rpx;
+$app-radius-md: 18rpx;
+$app-radius-lg: 22rpx;
+$app-radius-pill: 999rpx;

@@ -1,0 +1,256 @@
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+/* 基础颜色 */
+/* 蓝色系列 */
+/* 亮蓝系列 */
+/* 粉色系列 */
+/* 红色系列 */
+/* 橘红色系列 */
+/* 橙色系列 */
+/* 黄色系列 */
+/* 绿色系列 */
+/* 青色系列 */
+/* 紫色系列 */
+/* 靛色系列 */
+/* 冷灰系列 */
+/* 中性灰系列 */
+/* 暖灰系列 */
+/* 遮罩系列 */
+/* 白遮罩系列 */
+/* 透明度系列 */
+/* 基础数字 */
+/* 字重系列 */
+/* 排版系列 */
+/* label */
+/* body */
+/* title */
+/* 圆角系列 */
+/* 内边距系列 */
+/* 间距系列 */
+/* 边框线系列 */
+/* 语义变量(light) */
+/* 主色系列 */
+/* 危险色系列 */
+/* 成功色系列 */
+/* 警告色系列 */
+/* 文字色系列 */
+/* 图标色系列 */
+/* 图标 */
+/* 边框色系列 */
+/* 填充色系列 */
+/* 分割线系列 */
+/* 反馈色系列 */
+/* 透明度填充 */
+/* 分类色系列 */
+/* 黄色 */
+/* 蓝色 */
+/* 紫色 */
+/* 靛色 */
+/* 粉色 */
+/**
+ * 混合宏
+ */
+/**
+ * SCSS 配置项：命名空间以及BEM
+ */
+/**
+ * 混合宏
+ */
+/**
+ * 辅助函数
+ */
+/* 转换成字符串 */
+/* 判断是否存在 Modifier */
+/* 判断是否存在伪类 */
+/**
+  * BEM，定义块（b)
+  */
+/* 定义元素（e），对于伪类，会自动将 e 嵌套在 伪类 底下 */
+/* 此方法用于生成穿透样式 */
+/* 定义元素（e），对于伪类，会自动将 e 嵌套在 伪类 底下 */
+/* 定义状态（m） */
+/* 过渡帧（enter 与 leave-to） */
+/* 过渡激活态（enter-active 与 leave-active） */
+/* 定义状态（m） */
+/* 对于需要需要嵌套在 m 底下的 e，调用这个混合宏，一般在切换整个组件的状态，如切换颜色的时候 */
+/* 状态，生成 is-$state 类名 */
+/**
+  * 常用混合宏
+  */
+/* 单行超出隐藏 */
+/* 多行超出隐藏 */
+/* 清除浮动 */
+/* 0.5px 边框 指定方向*/
+/* 0.5px 边框 环绕 */
+/* 1px 边框 指定方向 */
+/* 1px 边框 环绕 */
+/**
+  * 三角形实现尖角样式，适用于背景透明情况
+  * @param $size 三角形高，底边为 $size * 2
+  * @param $bg 三角形背景颜色
+  */
+/**
+  * 正方形实现尖角样式，适用于背景不透明情况
+  * @param $size 正方形边长
+  * @param $bg 正方形背景颜色
+  * @param $z-index z-index属性值，不得大于外部包裹器
+  * @param $box-shadow 阴影
+*/
+ .wd-dialog {
+  background: transparent;
+}
+.wd-dialog__container {
+  background: var(--wot-dialog-bg, var(--wot-filled-oppo, var(--wot-base-white, white)));
+  border-radius: var(--wot-dialog-radius, var(--wot-radius-large, var(--wot-n-8, 8px)));
+  overflow: hidden;
+  width: var(--wot-dialog-width, 280px);
+  box-sizing: border-box;
+}
+.wd-dialog__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--wot-dialog-img-border-radius, var(--wot-radius-large, var(--wot-n-8, 8px)));
+}
+.wd-dialog__img + .wd-dialog__title {
+  margin-top: var(--wot-dialog-body-element-spacing-large, var(--wot-spacing-extra-loose, var(--wot-n-16, 16px)));
+}
+.wd-dialog__img + .wd-dialog__content {
+  margin-top: var(--wot-dialog-body-element-spacing-large, var(--wot-spacing-extra-loose, var(--wot-n-16, 16px)));
+}
+.wd-dialog__body.is-prompt .wd-dialog__img + .wd-dialog__content {
+  margin-top: var(--wot-dialog-body-element-spacing, var(--wot-spacing-tight, var(--wot-n-8, 8px)));
+}
+.wd-dialog__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: var(--wot-dialog-title-font-size, var(--wot-typography-body-size-extra-large, var(--wot-n-16, 16px)));
+  color: var(--wot-dialog-title-color, var(--wot-text-main, var(--wot-coolgrey-10, #1d1f29)));
+  line-height: var(--wot-dialog-title-line-height, var(--wot-typography-body-line-height-size-extra-large, var(--wot-n-24, 24px)));
+  font-weight: var(--wot-dialog-title-font-weight, var(--wot-font-weight-medium, 600));
+}
+.wd-dialog__title + .wd-dialog__content {
+  margin-top: var(--wot-dialog-body-element-spacing, var(--wot-spacing-tight, var(--wot-n-8, 8px)));
+}
+.wd-dialog__body {
+  padding: var(--wot-dialog-body-padding, var(--wot-padding-super-loose, var(--wot-n-20, 20px)) var(--wot-padding-super-loose, var(--wot-n-20, 20px)) 0);
+}
+.wd-dialog__body.is-prompt .wd-dialog__content {
+  padding-top: var(--wot-dialog-content-input-padding-top, var(--wot-spacing-tight, var(--wot-n-8, 8px)));
+}
+.wd-dialog__content {
+  max-height: var(--wot-dialog-content-max-height, 340px);
+  text-align: center;
+  overflow: auto;
+}
+.wd-dialog__content::-webkit-scrollbar {
+  width: var(--wot-dialog-scrollbar-width, var(--wot-stroke-bold, var(--wot-n-2, 2px)));
+}
+.wd-dialog__content::-webkit-scrollbar-thumb {
+  width: var(--wot-dialog-scrollbar-width, var(--wot-stroke-bold, var(--wot-n-2, 2px)));
+  background: var(--wot-dialog-scrollbar-color, var(--wot-border-main, var(--wot-coolgrey-3, #e5e6eb)));
+  border-radius: calc(var(--wot-dialog-scrollbar-width, var(--wot-stroke-bold, var(--wot-n-2, 2px))) / 2);
+}
+.wd-dialog__content-text {
+  color: var(--wot-dialog-content-color, var(--wot-text-secondary, var(--wot-coolgrey-8, #4e5369)));
+  font-size: var(--wot-dialog-content-font-size, var(--wot-typography-body-size-main, var(--wot-n-14, 14px)));
+  line-height: var(--wot-dialog-content-line-height, var(--wot-typography-body-line-height-size-main, var(--wot-n-20, 20px)));
+}
+.wd-dialog__input {
+  background: var(--wot-dialog-content-input-bg, var(--wot-filled-bottom, var(--wot-coolgrey-1, #f7f8fa)));
+}
+.wd-dialog__input-error {
+  color: var(--wot-dialog-content-input-error-color, var(--wot-danger-main, var(--wot-red-6, #f14646)));
+  font-size: var(--wot-dialog-content-input-font-size, var(--wot-typography-label-size-main, var(--wot-n-12, 12px)));
+  line-height: var(--wot-dialog-content-input-line-height, var(--wot-typography-label-line-height-size-main, var(--wot-n-18, 18px)));
+  padding-top: var(--wot-dialog-content-input-padding-top, var(--wot-spacing-tight, var(--wot-n-8, 8px)));
+  text-align: left;
+}
+.wd-dialog__actions {
+  padding: var(--wot-dialog-actions-padding, var(--wot-padding-super-loose, var(--wot-n-20, 20px)));
+}
+.wd-dialog__actions  .wd-dialog__actions-btn:not(:last-child) {
+  margin-right: var(--wot-dialog-actions-spacing, var(--wot-spacing-loose, var(--wot-n-12, 12px)));
+}
+.wd-dialog__actions  .wd-dialog__actions-btn--confirm {
+  font-weight: var(--wot-dialog-actions-confirm-font-weight, var(--wot-font-weight-medium, 600));
+}
+.wd-dialog__actions--vertical {
+  flex-direction: column;
+  padding: var(--wot-dialog-actions-padding-vertical, var(--wot-padding-super-loose, var(--wot-n-20, 20px)) var(--wot-padding-loose, var(--wot-n-12, 12px)) var(--wot-padding-loose, var(--wot-n-12, 12px)));
+}
+.wd-dialog__actions--vertical  .wd-dialog__actions-btn:not(:last-child) {
+  margin-right: 0;
+  margin-bottom: var(--wot-dialog-actions-spacing-vertical, var(--wot-spacing-tight, var(--wot-n-8, 8px)));
+}
+.wd-dialog__actions.is-text {
+  padding: var(--wot-padding-super-loose, var(--wot-n-20, 20px)) 0 0;
+}
+.wd-dialog__actions.is-text  .wd-dialog__actions-btn {
+  margin: 0;
+  border-radius: 0;
+  padding: var(--wot-dialog-action-text-button-padding, var(--wot-padding-loose, var(--wot-n-12, 12px)) var(--wot-padding-extra-loose, var(--wot-n-16, 16px)));
+  border-top: var(--wot-dialog-action-text-border, var(--wot-stroke-light, var(--wot-n-05, 0.5px))) solid var(--wot-dialog-action-text-border-color, var(--wot-border-main, var(--wot-coolgrey-3, #e5e6eb)));
+}
+.wd-dialog__actions.is-text  .wd-dialog__actions-btn:not(:last-child) {
+  border-right: var(--wot-dialog-action-text-border, var(--wot-stroke-light, var(--wot-n-05, 0.5px))) solid var(--wot-dialog-action-text-border-color, var(--wot-border-main, var(--wot-coolgrey-3, #e5e6eb)));
+}
+.wd-dialog__actions.is-text.wd-dialog__actions--vertical  .wd-dialog__actions-btn:not(:last-child) {
+  border-right: none;
+}
+.wd-dialog__flex {
+  display: flex;
+}
+.wd-dialog__block {
+  display: block;
+}
+.wd-dialog__icon {
+  font-size: var(--wot-dialog-icon-size, var(--wot-n-48, 48px));
+  line-height: var(--wot-dialog-icon-size, var(--wot-n-48, 48px));
+  margin: 0 auto;
+  margin-bottom: var(--wot-dialog-icon-margin-bottom, var(--wot-spacing-tight, var(--wot-n-8, 8px)));
+  color: var(--wot-dialog-primary-color, var(--wot-primary-6, var(--wot-blue-6, #1c64fd)));
+}
+.wd-dialog__icon.is-success {
+  color: var(--wot-dialog-success-color, var(--wot-success-main, var(--wot-green-6, #12b886)));
+}
+.wd-dialog__icon.is-info {
+  color: var(--wot-dialog-primary-color, var(--wot-primary-6, var(--wot-blue-6, #1c64fd)));
+}
+.wd-dialog__icon.is-warning {
+  color: var(--wot-dialog-warning-color, var(--wot-warning-main, var(--wot-orange-6, #f57f00)));
+}
+.wd-dialog__icon.is-danger {
+  color: var(--wot-dialog-error-color, var(--wot-danger-main, var(--wot-red-6, #f14646)));
+}
+.wd-dialog__close {
+  position: absolute;
+  top: var(--wot-dialog-close-icon-top, var(--wot-spacing-extra-loose, var(--wot-n-16, 16px)));
+  right: var(--wot-dialog-close-icon-right, var(--wot-spacing-extra-loose, var(--wot-n-16, 16px)));
+  font-size: var(--wot-dialog-close-icon-size, var(--wot-n-18, 18px));
+  color: var(--wot-dialog-close-icon-color, var(--wot-icon-secondary, var(--wot-coolgrey-8, #4e5369)));
+}

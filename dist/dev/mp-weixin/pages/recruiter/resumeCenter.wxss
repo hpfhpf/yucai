@@ -1,0 +1,351 @@
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.data-v-c5b3bf2e:root,
+page.data-v-c5b3bf2e {
+  --app-bg: #eef3ff;
+  --app-bg-soft: #eef4ff;
+  --app-surface: rgba(255, 255, 255, 0.96);
+  --app-surface-strong: rgba(255, 255, 255, 0.98);
+  --app-surface-muted: rgba(255, 255, 255, 0.92);
+  --app-text-primary: rgba(0, 0, 0, 0.86);
+  --app-text-secondary: rgba(0, 0, 0, 0.56);
+  --app-text-muted: rgba(0, 0, 0, 0.36);
+  --app-line: rgba(0, 0, 0, 0.06);
+  --app-line-strong: rgba(0, 0, 0, 0.1);
+  --app-primary: #1e5bff;
+  --app-primary-alt: #2a67ff;
+  --app-accent: #ff7a00;
+  --app-shadow-card: 0 16rpx 44rpx rgba(30, 60, 140, 0.1);
+  --app-shadow-card-strong: 0 18rpx 54rpx rgba(18, 70, 190, 0.18);
+  --app-radius-xs: 10rpx;
+  --app-radius-sm: 14rpx;
+  --app-radius-md: 18rpx;
+  --app-radius-lg: 22rpx;
+  --app-radius-pill: 999rpx;
+  --app-timing-fast: 0.18s;
+  --app-timing-base: 0.24s;
+  --app-ease-standard: ease;
+}
+.page.data-v-c5b3bf2e {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #dfe7ff 0%, #edf2ff 260rpx, var(--app-bg) 560rpx, var(--app-bg) 100%);
+  display: flex;
+  flex-direction: column;
+}
+.scroll.data-v-c5b3bf2e {
+  flex: 1 1 auto;
+}
+.content.data-v-c5b3bf2e {
+  padding: 18rpx 26rpx 0;
+  box-sizing: border-box;
+}
+.hero.data-v-c5b3bf2e {
+  display: flex;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 22rpx 22rpx;
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  box-shadow: var(--app-shadow-card);
+}
+.hero__left.data-v-c5b3bf2e {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.hero__nameRow.data-v-c5b3bf2e {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.hero__name.data-v-c5b3bf2e {
+  font-size: 40rpx;
+  font-weight: 950;
+  color: var(--app-text-primary);
+  line-height: 1.1;
+}
+.hero__edit.data-v-c5b3bf2e {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: var(--app-radius-sm);
+  background: rgba(30, 91, 255, 0.1);
+  border: 1px solid rgba(30, 91, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero__edit--pressed.data-v-c5b3bf2e {
+  opacity: 0.86;
+}
+.hero__role.data-v-c5b3bf2e {
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  font-weight: 900;
+  color: rgba(0, 0, 0, 0.48);
+}
+.hero__phone.data-v-c5b3bf2e {
+  margin-top: 14rpx;
+  display: inline-flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 10rpx 14rpx;
+  border-radius: var(--app-radius-pill);
+  background: rgba(0, 0, 0, 0.035);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+.hero__phoneText.data-v-c5b3bf2e {
+  font-size: 26rpx;
+  font-weight: 900;
+  color: rgba(0, 0, 0, 0.66);
+}
+.hero__right.data-v-c5b3bf2e {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+}
+.hero__avatar.data-v-c5b3bf2e {
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: var(--app-radius-pill);
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.06);
+  border: 2rpx solid rgba(255, 255, 255, 0.88);
+  box-shadow: 0 10rpx 26rpx rgba(30, 60, 140, 0.1);
+}
+.hero__avatarImg.data-v-c5b3bf2e {
+  width: 100%;
+  height: 100%;
+}
+.hero__avatarPh.data-v-c5b3bf2e {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 46%), linear-gradient(180deg, rgba(30, 91, 255, 0.2), rgba(0, 0, 0, 0.06));
+}
+.section.data-v-c5b3bf2e {
+  margin-top: 18rpx;
+  padding: 22rpx 22rpx;
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 14rpx 38rpx rgba(30, 60, 140, 0.1);
+}
+.section__title.data-v-c5b3bf2e {
+  font-size: 30rpx;
+  font-weight: 950;
+  color: var(--app-text-primary);
+  letter-spacing: 1rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+.section__title.data-v-c5b3bf2e::before {
+  content: "";
+  width: 8rpx;
+  height: 26rpx;
+  border-radius: var(--app-radius-pill);
+  background: linear-gradient(180deg, rgb(30, 91, 255), rgba(30, 91, 255, 0.55));
+}
+.section__text.data-v-c5b3bf2e {
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: rgba(0, 0, 0, 0.62);
+  font-weight: 700;
+}
+.eduRow.data-v-c5b3bf2e {
+  margin-top: 16rpx;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14rpx;
+}
+.eduRow__left.data-v-c5b3bf2e {
+  font-size: 28rpx;
+  font-weight: 950;
+  color: rgba(0, 0, 0, 0.72);
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.eduRow__right.data-v-c5b3bf2e {
+  font-size: 24rpx;
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.42);
+  flex: 0 0 auto;
+}
+.data-v-c5b3bf2e .timelineSteps {
+  margin-top: 16rpx;
+}
+.data-v-c5b3bf2e .timelineSteps .wd-step {
+  display: block;
+}
+.data-v-c5b3bf2e .timelineSteps .wd-step__header {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+.data-v-c5b3bf2e .timelineSteps .wd-step__content {
+  margin-left: 32rpx;
+  margin-top: 0;
+  padding-bottom: 20rpx;
+}
+.data-v-c5b3bf2e .timelineSteps .wd-step__circle {
+  width: 26rpx;
+  height: 26rpx;
+  border-radius: 999rpx;
+  background: rgba(30, 91, 255, 0.1);
+  border: 2rpx solid rgba(30, 91, 255, 0.22);
+}
+.data-v-c5b3bf2e .timelineSteps .wd-step--finished .wd-step__circle {
+  background: rgba(30, 91, 255, 0.1);
+  border-color: rgba(30, 91, 255, 0.22);
+}
+.data-v-c5b3bf2e .timelineSteps .wd-step__finished-icon {
+  display: none;
+}
+.data-v-c5b3bf2e .timelineSteps .wd-step__line {
+  top: 34rpx;
+  bottom: 0;
+  left: 50%;
+  width: 2rpx;
+  height: auto;
+  background: linear-gradient(180deg, rgba(30, 91, 255, 0.25), rgba(0, 0, 0, 0.08));
+  transform: none;
+}
+.data-v-c5b3bf2e .timelineSteps .wd-step:last-child .wd-step__line {
+  display: none;
+}
+.data-v-c5b3bf2e .timelineSteps .wd-step__title {
+  font-size: 28rpx;
+  font-weight: 950;
+  color: rgba(0, 0, 0, 0.74);
+  line-height: normal;
+}
+.data-v-c5b3bf2e .timelineSteps .wd-step__description {
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  font-weight: 800;
+  color: var(--app-text-secondary);
+  line-height: 1.45;
+  padding: 0;
+}
+.stepRow.data-v-c5b3bf2e {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+.stepRow__main.data-v-c5b3bf2e {
+  font-size: 28rpx;
+  font-weight: 950;
+  color: rgba(0, 0, 0, 0.74);
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stepRow__sub.data-v-c5b3bf2e {
+  font-size: 24rpx;
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.4);
+  flex: 0 0 auto;
+}
+.stepDesc.data-v-c5b3bf2e {
+  font-size: 26rpx;
+  font-weight: 800;
+  color: var(--app-text-secondary);
+  line-height: 1.45;
+}
+.bottomBar.data-v-c5b3bf2e {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--app-surface-strong);
+  border-top: 1px solid var(--app-line);
+  padding: 14rpx 22rpx;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  z-index: 2000;
+}
+.bottomBar__left.data-v-c5b3bf2e {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  flex: 0 0 auto;
+}
+.miniBtn.data-v-c5b3bf2e {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: var(--app-radius-lg);
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+.miniBtn--pressed.data-v-c5b3bf2e {
+  opacity: 0.86;
+}
+.miniBtn__text.data-v-c5b3bf2e {
+  font-size: 22rpx;
+  font-weight: 900;
+  color: rgba(0, 0, 0, 0.58);
+}
+.bottomBar__right.data-v-c5b3bf2e {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14rpx;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.data-v-c5b3bf2e .actionBtn {
+  height: 76rpx !important;
+  border-radius: var(--app-radius-pill) !important;
+  font-size: 28rpx !important;
+  font-weight: 950 !important;
+  letter-spacing: 1rpx !important;
+  padding: 0 26rpx !important;
+}
+.data-v-c5b3bf2e .actionBtn--ghost {
+  background: rgba(30, 91, 255, 0.08) !important;
+  color: rgba(30, 91, 255, 0.98) !important;
+  border-color: rgba(30, 91, 255, 0.18) !important;
+}
+.data-v-c5b3bf2e .actionBtn--primary {
+  background: linear-gradient(135deg, rgb(30, 91, 255), rgb(78, 133, 255)) !important;
+  box-shadow: 0 18rpx 44rpx rgba(30, 91, 255, 0.26) !important;
+}

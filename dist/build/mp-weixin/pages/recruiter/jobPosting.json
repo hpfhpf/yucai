@@ -1,0 +1,16 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "wd-toast": "../../node-modules/@wot-ui/ui/components/wd-toast/wd-toast",
+    "wd-popup": "../../node-modules/@wot-ui/ui/components/wd-popup/wd-popup",
+    "wd-button": "../../node-modules/@wot-ui/ui/components/wd-button/wd-button",
+    "wd-tag": "../../node-modules/@wot-ui/ui/components/wd-tag/wd-tag",
+    "wd-textarea": "../../node-modules/@wot-ui/ui/components/wd-textarea/wd-textarea",
+    "wd-icon": "../../node-modules/@wot-ui/ui/components/wd-icon/wd-icon",
+    "wd-radio-group": "../../node-modules/@wot-ui/ui/components/wd-radio-group/wd-radio-group",
+    "wd-radio": "../../node-modules/@wot-ui/ui/components/wd-radio/wd-radio",
+    "wd-input": "../../node-modules/@wot-ui/ui/components/wd-input/wd-input",
+    "header-nav": "../../components/HeaderNav"
+  }
+}

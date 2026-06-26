@@ -1,0 +1,154 @@
+@import './theme.scss';
+@import './variables.scss';
+@import './mixin.scss';
+@import './global.scss';
+
+view {
+    margin: 0;
+    padding: 0;
+}
+
+.p-top-20 {
+    padding-top: 20rpx;
+}
+
+.p-bottom-20 {
+    padding-bottom: 20rpx;
+}
+
+.m-top-20 {
+    margin-top: 20rpx;
+}
+
+.m-bottom-20 {
+    margin-bottom: 20rpx;
+}
+
+.m-top-40 {
+    margin-top: 40rpx;
+}
+
+.flex {
+    display: flex;
+}
+
+
+@for $i from 0 through 1000 {
+    .height-#{$i} {
+        height: #{$i}px;
+    }
+
+    .width-#{$i} {
+        width: #{$i}px;
+    }
+}
+
+// 字体大小
+@for $i from 12 through 60 {
+    .font-size-#{$i} {
+        font-size: #{$i}px;
+    }
+}
+
+// 字体行高
+@for $i from 12 through 40 {
+    .line-height-#{$i} {
+        line-height: #{$i}px;
+    }
+}
+
+// 居中方式
+@each $var in left,
+center,
+right {
+    .text-align-#{$var} {
+        text-align: #{$var};
+    }
+}
+
+// 外边框
+@for $i from 0 through 200 {
+    .margin-#{$i} {
+        margin: #{$i}px;
+    }
+
+    .margin-#{$i}-a {
+        margin: #{$i}px auto;
+    }
+
+    .margin-#{$i}-n {
+        margin: #{$i}px 0px;
+    }
+
+    .margin-n-#{$i} {
+        margin: 0px #{$i}px;
+    }
+
+    .margin_t-#{$i} {
+        margin-top: #{$i}px;
+    }
+
+    .margin_r-#{$i} {
+        margin-right: #{$i}px;
+    }
+
+    .margin_b-#{$i} {
+        margin-bottom: #{$i}px;
+    }
+
+    .margin_l-#{$i} {
+        margin-left: #{$i}px;
+    }
+}
+
+// 内边框
+@for $i from 1 through 200 {
+    .padding-#{$i} {
+        padding: #{$i}px;
+    }
+
+    .padding-#{$i}-n {
+        padding: #{$i}px 0px;
+    }
+
+    .padding-n-#{$i} {
+        padding: 0px #{$i}px;
+    }
+
+    .padding_t-#{$i} {
+        padding-top: #{$i}px;
+    }
+
+    .padding_r-#{$i} {
+        padding-right: #{$i}px;
+    }
+
+    .padding_b-#{$i} {
+        padding-bottom: #{$i}px;
+    }
+
+    .padding_l-#{$i} {
+        padding-left: #{$i}px;
+    }
+}
+
+// 文字省略
+.ellipse {
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+@for $i from 1 through 5 {
+    .ellipse-#{$i} {
+        display: -webkit-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-all;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: #{$i};
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "wd-icon": "../../wd-icon/wd-icon",
+    "wd-datetime-picker-view": "../../wd-datetime-picker-view/wd-datetime-picker-view",
+    "month": "../month/month"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "wd-cell-group": "../../node-modules/@wot-ui/ui/components/wd-cell-group/wd-cell-group",
+    "wd-cell": "../../node-modules/@wot-ui/ui/components/wd-cell/wd-cell",
+    "wd-tag": "../../node-modules/@wot-ui/ui/components/wd-tag/wd-tag",
+    "header-nav": "../../components/HeaderNav",
+    "bottom-nav": "../../components/BottomNav"
+  }
+}

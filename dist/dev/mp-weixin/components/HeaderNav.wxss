@@ -1,0 +1,101 @@
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.nav.data-v-60d117ec {
+  position: relative;
+}
+.nav .addr.data-v-60d117ec {
+  width: 32rpx;
+  height: 32rpx;
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAEoklEQVR4AdSaDVLjMAyFt70NcIhtT1Z6srKHAG5D932ZesaUxJZkOw07FVEc/Tw9yUkKu/+z0r/Pz8/D+/v7KyL9kuTj4+OKpHOO2CDSD6PhDSWAAiRTsdfr9bLb7U6I9EOSVGA654gNIv0COZCBJNuexyEEABbgFCCZim0BDRkIMYndEuvetysB6vZBMnX6PlGv895EdCFARU+Fq9sXyfB9C5kQwTSQm/OoNBMAABW9WuF5oZBAbjDk6x69iQASA8CTcIQtGJiGSOwwAVspPhXNNERICBMA6yn5Vo6QQGM8eEIERJieAyXAb0nmrgfXTh4/NwEUL9CuJDkg+VL08fn5eff09HRMwjmiyTojuY9Hl+/0xmn1cRHAeKmAUPHymwq/Ffy2BPDl5eUVSWQs2ZXWlesE1pJNuuYi4OvrK/SMV1fOtcIToPwIEfjmaw7d1CgXATDrADCZyudIIdNJ4Ae+xPC6ijhezqoNMxPA3g+AoPOL426Np+mZto/VPrOrToGZAHWhGixL/EcdONO9fK1FhwRiemLI/scU3PubCIh0v2fxCTQx1QjvRBUbZyIgAbAexfzZahuw6xrbRIBYL7J4XwSdul/rdc5W8MRSM4o3wioB1uepB1SrrRri2galGqoEeJ/9XnCtZFj8SzVUCbAkyG2U7F9+PkL35tjv93+XcFQJKDkvBf1N61UCvMX8NsK6E+AlbA370pOgSkDJeQ68134uRm1NN1rXY7kUr0pAyXnpWumxs+RjXe8dewgBKqZbhxTr20dPgOKLzTdjw0mVAI2b66WDnGyD3p0iLiI8XcmtEkDSoHQFCgaReuHoFTVk8fuDhYBF5xIQJeWraAjwXFy+kRJz7lrLWpUA75ePHAyAAZ6vRXRiREeffHo3WdzGVQIIoOSLAbheEvnyC8rwJDD2xCjlqF0rNdFEgBKEtoH8pg+T4P3TNl3HB98pSPCH/IvYTQTAoLoQnoKEXTFOFEVXKRCRzr1iktv59J8isE1+Lcfa7yZMBABAz99u3/LUlQMFItL5y/Ikt/Nuz3nFLnafuswE1Jgk2NbEgtlMAMVZGMVuC2LF6iIARjWmzfeCNQgCqyWPi4BbwOq+utk97GDtPgDdBPR6IpB8hFC8tfvkdxOAk2SzU1B66xPuH58QAUwBTP+I9uAFMIHNAyNEAAkYsy3dEMECJrB5JEwAScT2keMWJIqliQAKF/MPJ4HRB0tEmgkQ828tACKgcx9yR0Y/xWgmgEAA0CSs/oJETnKDIYn32IUAkmoSHrEVmh/H3QiABHVkNRIYfZHePHVdCQAQwCBjpJCjdfQTvq4EEBRgAEQfIcQmR6/Y3QkAGAC1HZrHk1i5EJPY+VqrPoQAQGk7HAGM3kuI2StWijOMABL0BCwyh9xghxIACT2AE0Nkdt9S4BtOAMApgGQR4aZHjIivxWc4AYCgAApB9wg+vW969/lXIYCkFEJB6BbBFh+LbYvNagQAkoIoDL0k2GBbsul1bVUCAE1hFIg+J1zDZu7aiLXVCaAICqRQ9FxY41q+Nlp/CAEURaEUjI6gs4a+pjyMAIqkYApH0FnzSqv9fwAAAP//RR3NmAAAAAZJREFUAwCcOnudKn0a8AAAAABJRU5ErkJggg==") repeat-x center center/contain;
+}
+.nav .nav__left.data-v-60d117ec {
+  position: absolute;
+  left: 26rpx;
+  height: 76rpx;
+  display: flex;
+  align-items: center;
+}
+.nav .nav__city.data-v-60d117ec {
+  max-width: 160rpx;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.94);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8rpx;
+}
+.nav .nav__caret.data-v-60d117ec {
+  width: 0;
+  height: 0;
+  border-left: 8rpx solid transparent;
+  border-right: 8rpx solid transparent;
+  border-top: 10rpx solid rgba(255, 255, 255, 0.88);
+  transform: translateY(2rpx);
+}
+.nav__bar.data-v-60d117ec {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  line-height: 44px;
+}
+.nav__title.data-v-60d117ec {
+  font-size: 34rpx;
+  font-weight: 600;
+}
+.nav__back.data-v-60d117ec {
+  position: absolute;
+  left: 10rpx;
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav__backIcon.data-v-60d117ec {
+  width: 18rpx;
+  height: 18rpx;
+  border-left: 4rpx solid rgba(0, 0, 0, 0.72);
+  border-bottom: 4rpx solid rgba(0, 0, 0, 0.72);
+  transform: rotate(45deg);
+  margin-left: 6rpx;
+}
+.white__nav .nav__title.data-v-60d117ec {
+  color: rgba(255, 255, 255, 0.92);
+}
+.white__nav .nav__backIcon.data-v-60d117ec {
+  border-left: 4rpx solid rgba(255, 255, 255, 0.72);
+  border-bottom: 4rpx solid rgba(255, 255, 255, 0.72);
+}
+.black__nav .nav__title.data-v-60d117ec {
+  color: rgba(0, 0, 0, 0.92);
+}
+.black__nav .nav__backIcon.data-v-60d117ec {
+  border-left: 4rpx solid rgba(0, 0, 0, 0.72);
+  border-bottom: 4rpx solid rgba(0, 0, 0, 0.72);
+}

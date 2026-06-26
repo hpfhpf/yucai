@@ -1,0 +1,10 @@
+{
+  "component": true,
+  "usingComponents": {
+    "wd-icon": "../wd-icon/wd-icon",
+    "wd-popup": "../wd-popup/wd-popup",
+    "wd-button": "../wd-button/wd-button",
+    "wd-input": "../wd-input/wd-input",
+    "wd-textarea": "../wd-textarea/wd-textarea"
+  }
+}

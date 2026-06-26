@@ -1,0 +1,164 @@
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.form-group {
+  border-radius: 22rpx;
+  overflow: hidden;
+  box-shadow: var(--app-shadow-card);
+}
+.form-group .wd-cell__left {
+  width: 140rpx;
+  flex: none;
+}
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.page.data-v-4558e0a7 {
+  min-height: 100vh;
+  background: var(--app-bg);
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #dfe7ff 0%, #edf2ff 260rpx, var(--app-bg) 560rpx, var(--app-bg) 100%);
+}
+.content.data-v-4558e0a7 {
+  position: relative;
+  padding: 36rpx 0 44rpx;
+}
+.uploads.data-v-4558e0a7 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22rpx;
+}
+.upload.data-v-4558e0a7 {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #DDD;
+  box-sizing: border-box;
+  box-shadow: var(--app-shadow-card);
+  border-radius: 16rpx;
+  justify-content: center;
+  min-height: 200rpx;
+  align-items: center;
+}
+.upload__trigger.data-v-4558e0a7 {
+  height: 170rpx;
+  border-radius: 18rpx;
+  background: rgba(248, 250, 255, 0.9);
+  border: 2rpx dashed rgba(30, 91, 255, 0.25);
+}
+.upload__preview.data-v-4558e0a7 {
+  height: 170rpx;
+  border-radius: 18rpx;
+  overflow: hidden;
+}
+.upload__empty.data-v-4558e0a7 {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.upload__camera.data-v-4558e0a7 {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(30, 91, 255, 0.2), rgba(30, 91, 255, 0.4));
+  position: relative;
+}
+.upload__camera.data-v-4558e0a7::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46rpx;
+  height: 46rpx;
+  border-radius: 8rpx;
+  background: url("data:image/png;base64,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") no-repeat center center/contain;
+  transform: translate(-50%, -50%);
+}
+.upload__label.data-v-4558e0a7 {
+  margin-top: 12rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: rgba(0, 0, 0, 0.36);
+}
+.section.data-v-4558e0a7 {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin: 22rpx 0 16rpx;
+}
+.section__bar.data-v-4558e0a7 {
+  width: 6rpx;
+  height: 26rpx;
+  border-radius: 999rpx;
+  background: #1e5bff;
+}
+.section__title.data-v-4558e0a7 {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.74);
+}
+.bottom.data-v-4558e0a7 {
+  margin-top: 30rpx;
+}
+.agree.data-v-4558e0a7 {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 6rpx 4rpx 18rpx;
+}
+.agree__text.data-v-4558e0a7 {
+  font-size: 24rpx;
+  color: rgba(0, 0, 0, 0.36);
+}
+.submit-btn.data-v-4558e0a7 {
+  height: 92rpx;
+  border-radius: 999rpx;
+  font-weight: 700;
+  box-shadow: 0 18rpx 42rpx rgba(12, 72, 255, 0.22);
+}
