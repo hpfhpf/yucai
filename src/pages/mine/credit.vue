@@ -56,12 +56,17 @@
             </view>
             <view class="form-body">
                 <wd-cell-group border>
-                    <wd-picker
-                        v-model="form.type"
-                        label="异议类型"
-                        placeholder="请选择异议类型"
-                        :columns="typeColumns"
+                    <wd-cell
+                        title="异议类型"
+                        :value="typeLabel || '请选择异议类型'"
+                        is-link
                         required
+                        @click="showTypePicker = true"
+                    />
+                    <wd-picker
+                        v-model:visible="showTypePicker"
+                        :columns="typeColumns"
+                        @confirm="handleTypeConfirm"
                     />
                     <wd-textarea
                         v-model="form.content"
@@ -90,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import HeaderNav from '@/components/HeaderNav.vue'
 
 interface DisputeItem {
@@ -106,6 +111,7 @@ interface DisputeItem {
 const loading = ref(false)
 const list = ref<DisputeItem[]>([])
 const showForm = ref(false)
+const showTypePicker = ref(false)
 const submitting = ref(false)
 
 const form = ref({
@@ -120,6 +126,17 @@ const typeColumns = [
     { value: 'info_outdated', label: '信息过期' },
     { value: 'other', label: '其他问题' }
 ]
+
+// 已选类型的显示文本
+const typeLabel = computed(() => {
+    const found = typeColumns.find(c => c.value === form.value.type)
+    return found ? found.label : ''
+})
+
+const handleTypeConfirm = ({ value }: { value: string[] }): void => {
+    form.value.type = value[0]
+    showTypePicker.value = false
+}
 
 const getStatusType = (status: string) => {
     const map: Record<string, string> = {
