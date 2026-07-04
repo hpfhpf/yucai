@@ -1,0 +1,83 @@
+:root,
+page {
+  --app-bg: #eef3ff;
+  --app-bg-soft: #eef4ff;
+  --app-surface: rgba(255, 255, 255, 0.96);
+  --app-surface-strong: rgba(255, 255, 255, 0.98);
+  --app-surface-muted: rgba(255, 255, 255, 0.92);
+  --app-text-primary: rgba(0, 0, 0, 0.86);
+  --app-text-secondary: rgba(0, 0, 0, 0.56);
+  --app-text-muted: rgba(0, 0, 0, 0.36);
+  --app-line: rgba(0, 0, 0, 0.06);
+  --app-line-strong: rgba(0, 0, 0, 0.1);
+  --app-primary: #1e5bff;
+  --app-primary-alt: #2a67ff;
+  --app-accent: #ff7a00;
+  --app-bg-hero-top: #dfe7ff;
+  --app-bg-hero-mid: #edf2ff;
+  /* 字体族：招聘类产品统一使用系统无衬线体，保证跨端观感一致 */
+  --app-font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Roboto, "Segoe UI", sans-serif;
+  /* 字号阶梯（rpx）：极小→特大展示 */
+  --app-fs-xs: 22rpx;
+  --app-fs-sm: 24rpx;
+  --app-fs-base: 28rpx;
+  --app-fs-md: 30rpx;
+  --app-fs-lg: 32rpx;
+  --app-fs-xl: 34rpx;
+  --app-fs-2xl: 40rpx;
+  --app-fs-3xl: 48rpx;
+  /* 字重：招聘感强调重字重 */
+  --app-fw-regular: 400;
+  --app-fw-medium: 500;
+  --app-fw-semibold: 600;
+  --app-fw-bold: 700;
+  --app-fw-heavy: 800;
+  --app-fw-black: 900;
+  --app-shadow-card: 0 16rpx 44rpx rgba(30, 60, 140, 0.1);
+  --app-shadow-card-strong: 0 18rpx 54rpx rgba(18, 70, 190, 0.18);
+  --app-radius-xs: 10rpx;
+  --app-radius-sm: 14rpx;
+  --app-radius-md: 18rpx;
+  --app-radius-lg: 22rpx;
+  --app-radius-pill: 999rpx;
+  --app-timing-fast: 0.18s;
+  --app-timing-base: 0.24s;
+  --app-ease-standard: ease;
+}
+
+$app-color-primary: #1e5bff;
+$app-color-primary-alt: #2a67ff;
+$app-color-accent: #ff7a00;
+$app-bg-hero-top: #dfe7ff;
+$app-bg-hero-mid: #edf2ff;
+$app-font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Roboto, "Segoe UI", sans-serif;
+$app-font-size-xs: 22rpx;
+$app-font-size-sm: 24rpx;
+$app-font-size-base: 28rpx;
+$app-font-size-md: 30rpx;
+$app-font-size-lg: 32rpx;
+$app-font-size-xl: 34rpx;
+$app-font-size-2xl: 40rpx;
+$app-font-size-3xl: 48rpx;
+$app-font-weight-regular: 400;
+$app-font-weight-medium: 500;
+$app-font-weight-semibold: 600;
+$app-font-weight-bold: 700;
+$app-font-weight-heavy: 800;
+$app-font-weight-black: 900;
+$app-bg: #eef3ff;
+$app-bg-soft: #eef4ff;
+$app-text-primary: rgba(0, 0, 0, 0.86);
+$app-text-secondary: rgba(0, 0, 0, 0.56);
+$app-text-muted: rgba(0, 0, 0, 0.36);
+$app-line: rgba(0, 0, 0, 0.06);
+$app-line-strong: rgba(0, 0, 0, 0.1);
+$app-card-bg: rgba(255, 255, 255, 0.96);
+$app-card-bg-muted: rgba(255, 255, 255, 0.92);
+$app-shadow-card: 0 16rpx 44rpx rgba(30, 60, 140, 0.1);
+$app-shadow-card-strong: 0 18rpx 54rpx rgba(18, 70, 190, 0.18);
+$app-radius-xs: 10rpx;
+$app-radius-sm: 14rpx;
+$app-radius-md: 18rpx;
+$app-radius-lg: 22rpx;
+$app-radius-pill: 999rpx;

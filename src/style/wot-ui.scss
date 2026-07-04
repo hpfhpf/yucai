@@ -1,0 +1,96 @@
+:root,
+page {
+    // wot-design主题色
+    --wot-color-theme: #4d80f0;
+    --wot-color-success: #34d19d;
+    --wot-color-warning: #f0883a;
+    --wot-color-danger: #fa4350;
+    --wot-color-info: #f0f0f0;
+    // wot-design按钮颜色
+    --wot-button-primary-bg-color: #4d80f0;
+    --wot-button-success-bg-color: #34d19d;
+    --wot-button-warning-bg-color: #f0883a;
+    --wot-button-danger-bg-color: #fa4350;
+    --wot-button-info-bg-color: #f0f0f0;
+
+    // 默认字体大小 32rpx
+    --wot-text-font-size: 28rpx;
+    --wot-input-inner-font-size: 28rpx;
+    --wot-textarea-inner-font-size: 28rpx;
+    --wot-input-padding: 20rpx;
+    --wot-input-inner-height: 52rpx; //系统变量
+
+    --wot-typography-label-size-extra-small: 24rpx;
+    --wot-typography-label-size-small: 26rpx;
+    --wot-typography-label-size-main: 28rpx;
+    --wot-typography-label-size-large: 30rpx;
+    --wot-typography-body-size-main: 32rpx;
+    --wot-typography-body-size-large: 34rpx;
+    --wot-typography-body-size-extra-large: 36rpx;
+    --wot-typography-body-size-ultra-large: 38rpx;
+    --wot-typography-title-size-main: 40rpx;
+
+    // 按钮字体大小
+    --wot-button-font-size-mini: 28rpx;
+    --wot-button-font-size-small: 30rpx;
+    --wot-button-font-size-medium: 32rpx;
+    --wot-button-font-size-large: 34rpx;
+
+    // Cell 组件字体大小
+    --wot-cell-title-font-size: 32rpx;
+    --wot-cell-label-font-size: 28rpx;
+    --wot-cell-value-font-size: 28rpx;
+    --wot-cell-placeholder-font-size: 32rpx;
+    --wot-cell-title-font-size-large: 34rpx;
+    --wot-cell-label-font-size-large: 30rpx;
+    --wot-cell-value-font-size-large: 34rpx;
+
+    // 其他组件字体大小
+    --wot-tag-small-font-size: 26rpx;
+    --wot-tag-medium-font-size: 28rpx;
+    --wot-tag-default-font-size: 28rpx;
+    --wot-tag-large-font-size: 30rpx;
+    --wot-tag-extra-large-font-size: 32rpx;
+    --wot-tag-font-size: 28rpx;
+
+    --wot-tabs-nav-item-font-size: 32rpx;
+    --wot-tabs-map-header-font-size: 32rpx;
+    --wot-tabs-map-nav-btn-font-size: 36rpx;
+
+    --wot-toast-font-size: 32rpx;
+
+    --wot-action-sheet-action-font-size: 36rpx;
+    --wot-action-sheet-description-font-size: 32rpx;
+    --wot-action-sheet-cancel-font-size: 36rpx;
+    --wot-action-sheet-title-font-size: 36rpx;
+    --wot-action-sheet-panel-title-font-size: 28rpx;
+
+    --wot-loading-text-font-size: 32rpx;
+
+    --wot-icon-font-size: 32rpx;
+
+    --wot-form-item-error-message-font-size: 28rpx;
+
+    --wot-badge-font-size: 24rpx;
+
+    --wot-picker-view-column-item-font-size: 36rpx;
+
+    --wot-calendar-view-panel-title-font-size: 28rpx;
+    --wot-calendar-view-day-font-size: 36rpx;
+    --wot-calendar-view-info-font-size: 24rpx;
+    --wot-calendar-view-week-font-size: 32rpx;
+    --wot-calendar-view-time-picker-font-size: 36rpx;
+    --wot-calendar-range-font-size: 28rpx;
+    --wot-calendar-range-item-font-size: 36rpx;
+
+    --wot-datetime-picker-action-font-size: 28rpx;
+    --wot-datetime-picker-title-font-size: 28rpx;
+    --wot-datetime-picker-range-font-size: 28rpx;
+    --wot-datetime-picker-range-item-font-size: 36rpx;
+
+    --wot-step-circle-text-font-size: 32rpx;
+    --wot-step-title-font-size: 32rpx;
+    --wot-step-description-font-size: 32rpx;
+
+    --wot-card-title-font-size: 32rpx;
+}
