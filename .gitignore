@@ -6,15 +6,6 @@ node_modules/
 dist/
 **/dist/
 
-# 环境变量（本地，含密钥，不提交）
-.env
-.env.local
-**/.env
-**/.env.local
-
-# Prisma 迁移（本地）
-backend/prisma/migrations/
-
 # 日志
 *.log
 
