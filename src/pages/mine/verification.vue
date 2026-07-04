@@ -7,7 +7,7 @@
                 <view class="uploads">
                     <view class="upload">
                         <wd-upload v-model:file-list="frontFiles" action="" :limit="1" :auto-upload="false"
-                            accept="image" size-type="['compressed']" source-type="['album', 'camera']"
+                            accept="image" :size-type="['compressed']" :source-type="['album', 'camera']"
                             custom-evoke-class="upload__trigger" custom-preview-class="upload__preview"
                             @change="onFrontChange">
                             <view class="upload__empty">
@@ -19,7 +19,7 @@
 
                     <view class="upload">
                         <wd-upload v-model:file-list="backFiles" action="" :limit="1" :auto-upload="false"
-                            accept="image" size-type="['compressed']" source-type="['album', 'camera']"
+                            accept="image" :size-type="['compressed']" :source-type="['album', 'camera']"
                             custom-evoke-class="upload__trigger" custom-preview-class="upload__preview"
                             @change="onBackChange">
                             <view class="upload__empty">
@@ -83,7 +83,7 @@ const validDate = ref<(number | string)[]>([])
 const showValidDatePicker = ref(false)
 const agree = ref(false)
 
-const systemInfo = uni.getSystemInfoSync()
+const systemInfo = uni.getWindowInfo()
 const safeBottom = ref(systemInfo.safeAreaInsets?.bottom || 0)
 
 const frontImage = computed(() => frontFiles.value[0]?.url || '')

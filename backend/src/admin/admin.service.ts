@@ -47,8 +47,12 @@ export class AdminService {
     const { role, keyword } = query;
     const skip = (page - 1) * limit;
     const where: any = {};
-    if (role) where.role = role;
-    if (keyword) where.OR = [{ phone: { contains: keyword } }, { nickname: { contains: keyword } }];
+    // 仅接受合法角色枚举，过滤 "undefined"/"" 等脏值，避免传入 Prisma enum 报错
+    const VALID_ROLES = ['SEEKER', 'RECRUITER', 'ADMIN', 'SUPER_ADMIN'];
+    if (role && VALID_ROLES.includes(role)) where.role = role;
+    if (keyword && keyword !== 'undefined') {
+      where.OR = [{ phone: { contains: keyword } }, { nickname: { contains: keyword } }];
+    }
 
     const [total, items] = await Promise.all([
       this.prisma.user.count({ where }),

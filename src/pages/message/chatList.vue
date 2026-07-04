@@ -164,7 +164,7 @@ const chatList: MessageItem[] = [
 
 const currentList = computed(() => (activeTab.value === 'invite' ? inviteList : chatList))
 
-const systemInfo = uni.getSystemInfoSync()
+const systemInfo = uni.getWindowInfo()
 const statusBarHeight = ref(systemInfo.statusBarHeight || 0)
 const navBarHeight = ref(44)
 const capsuleWidth = ref(88)

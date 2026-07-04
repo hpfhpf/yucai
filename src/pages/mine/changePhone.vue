@@ -18,7 +18,7 @@
                             <text class="phonePrefix__text">{{ countryCode }}</text>
                             <FaIcon name="caret-down" :size="20" color="rgba(0,0,0,0.22)" />
                         </view>
-                        <wd-input v-model="phone" class="row__input" type="number" maxlength="11"
+                        <wd-input v-model="phone" class="row__input" type="number" :maxlength="11"
                             placeholder="请输入手机号" />
                     </view>
                 </view>
@@ -28,7 +28,7 @@
                         <FaIcon name="shield-halved" :size="36" color="#1e5bff" />
                     </view>
                     <view class="row__main">
-                        <wd-input v-model="captcha" class="row__input" maxlength="6" placeholder="请输入图形验证码" />
+                        <wd-input v-model="captcha" class="row__input" :maxlength="6" placeholder="请输入图形验证码" />
                     </view>
                     <view class="row__right">
                         <view class="captcha" hover-class="captcha--pressed" @click="refreshCaptcha">
@@ -42,7 +42,7 @@
                         <FaIcon name="envelope" :size="36" color="#1e5bff" />
                     </view>
                     <view class="row__main">
-                        <wd-input v-model="smsCode" class="row__input" type="number" maxlength="6"
+                        <wd-input v-model="smsCode" class="row__input" type="number" :maxlength="6"
                             placeholder="短信验证码" />
                     </view>
                     <view class="row__right">
@@ -79,7 +79,7 @@ const captcha = ref('')
 const smsCode = ref('')
 const saving = ref(false)
 
-const systemInfo = uni.getSystemInfoSync()
+const systemInfo = uni.getWindowInfo()
 const safeBottom = ref(systemInfo.safeAreaInsets?.bottom || 0)
 
 const captchaImageText = ref('aE S U Q')

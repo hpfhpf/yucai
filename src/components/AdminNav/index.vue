@@ -18,7 +18,7 @@ type NavItem = { key: string; label: string; icon: string; path: string }
 
 const props = withDefaults(defineProps<{ activeIndex: number }>(), { activeIndex: 0 })
 
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 
 const userInfo = (() => {
     try { return JSON.parse(uni.getStorageSync('userInfo') || '{}') } catch { return {} }

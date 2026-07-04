@@ -63,7 +63,7 @@ import FaIcon from '@/components/FaIcon/index.vue'
 import Empty from '@/components/Empty/index.vue'
 import { apiAdminListAdmins, apiAdminSetUserRole } from '@/api/admin'
 
-const statusBar = ref(uni.getSystemInfoSync().statusBarHeight || 0)
+const statusBar = ref(uni.getWindowInfo().statusBarHeight || 0)
 const admins = ref<any[]>([])
 
 const back = () => uni.navigateBack({ fail: () => uni.reLaunch({ url: '/pages/admin/index' }) })

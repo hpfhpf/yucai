@@ -1,20 +1,17 @@
 <script lang="ts" setup>
 import { useSlots } from 'vue'
 
-// 更精确的 imageSize 类型：支持对象、数字（px）、字符串（带单位）
-type ImageSize =
-    | { width: number; height: number }
-    | number
-    | string
+// 更精确的 iconSize 类型：支持数字（px）或字符串（带单位）
+type IconSize = number | string
 
 interface Props {
     image?: string
-    imageSize?: ImageSize
+    imageSize?: IconSize
     tip?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    image: 'content',
+    image: 'empty',
     tip: '暂无数据'
 })
 
@@ -25,11 +22,11 @@ const hasImageSlot = () => !!slots.image
 </script>
 
 <template>
-    <wd-status-tip :tip="tip" :image-size="imageSize">
+    <wd-empty :tip="tip" :icon="image" :icon-size="imageSize">
         <!-- 使用 v-if 控制插槽注入 -->
         <template v-if="hasImageSlot()" #image>
             <slot name="image" />
         </template>
-        <!-- 否则 wd-status-tip 自动使用 :image prop -->
-    </wd-status-tip>
+        <!-- 否则 wd-empty 自动使用 :icon prop -->
+    </wd-empty>
 </template>

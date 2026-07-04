@@ -66,7 +66,7 @@ import BottomNav from '@/components/BottomNav.vue'
 import HeaderNav from '@/components/HeaderNav.vue'
 import { apiGetSeekers } from '@/api/index'
 
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 
 type FilterKey = 'all' | 'latest'
 

@@ -69,7 +69,7 @@ import AdminNav from '@/components/AdminNav/index.vue'
 import FaIcon from '@/components/FaIcon/index.vue'
 import { apiAdminDashboard } from '@/api/admin'
 
-const statusBar = ref(uni.getSystemInfoSync().statusBarHeight || 0)
+const statusBar = ref(uni.getWindowInfo().statusBarHeight || 0)
 const userInfo = (() => { try { return JSON.parse(uni.getStorageSync('userInfo') || '{}') } catch { return {} } })()
 const isSuper = userInfo?.role === 'SUPER_ADMIN'
 const userName = ref(userInfo?.nickname || '管理员')

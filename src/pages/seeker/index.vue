@@ -2,10 +2,35 @@
     <view class="page">
         <view class="hero">
             <HeaderNav title="首页" type="seeker-index" theme="FFF" />
-            <view class="search" @click="handleSearchTap">
+            <view class="search">
                 <view class="search__icon" />
                 <wd-input v-model="keyword" class="search__input" auto-complete="off" placeholder="请输入关键词、职位"
-                    @confirm="handleSearchConfirm" @input="handleSearchInput" />
+                    :focus="inputFocused" @confirm="handleSearchConfirm" @input="handleSearchInput"
+                    @focus="handleSearchFocus" @blur="handleSearchBlur" />
+                <view v-if="keyword" class="search__clear" @click="handleClearInput">
+                    <FaIcon name="circle-xmark" :size="30" color="rgba(255,255,255,0.85)" />
+                </view>
+                <view class="search__btn" @click="handleSearchConfirm">
+                    <FaIcon name="magnifying-glass" :size="30" color="#FFF" />
+                    <text class="search__btn-text">搜索</text>
+                </view>
+            </view>
+
+            <!-- 搜索历史下拉 -->
+            <view v-if="showHistory && searchHistory.length" class="history">
+                <view class="history__head">
+                    <text class="history__title">搜索历史</text>
+                    <view class="history__clear" @click="handleClearHistory">
+                        <FaIcon name="trash-can" :size="26" color="rgba(0,0,0,0.4)" />
+                        <text class="history__clear-text">清空</text>
+                    </view>
+                </view>
+                <view class="history__tags">
+                    <view v-for="(h, i) in searchHistory" :key="i" class="history__tag"
+                        hover-class="history__tag--pressed" @click="handleHistoryTap(h)">
+                        {{ h }}
+                    </view>
+                </view>
             </view>
         </view>
 
@@ -52,7 +77,10 @@
                 </view>
 
                 <view class="section">
-                    <view class="section__title">为您推荐最新好职位</view>
+                    <view v-if="keyword.trim()" class="result-count">
+                        共找到 <text class="result-count__num">{{ totalCount }}</text> 个职位
+                    </view>
+                    <view v-else class="section__title">为您推荐最新好职位</view>
                     <wd-button type="primary" plain size="small" class="refresh-btn" @click="handleRefresh">
                         <text>换一批</text>
                     </wd-button>
@@ -60,6 +88,9 @@
 
                 <view class="jobs">
                     <view v-if="loading" class="empty-tip">加载中...</view>
+                    <view v-else-if="!jobs.length && keyword.trim()" class="empty-tip">
+                        未找到「{{ keyword }}」相关职位，换个关键词试试
+                    </view>
                     <view v-else-if="!jobs.length" class="empty-tip">暂无职位，请稍后再试</view>
                     <view v-for="job in jobs" :key="job.id" class="jobCard" hover-class="jobCard--pressed"
                         @click="handleJobTap(job.id)">
@@ -90,6 +121,47 @@ import BottomNav from '@/components/BottomNav.vue'
 import HeaderNav from '@/components/HeaderNav.vue'
 import FaIcon from '@/components/FaIcon/index.vue'
 import { apiGetJobs } from '@/api/index'
+import { localStorageData } from '@/utils/index'
+
+// ===== 搜索历史 =====
+const SEARCH_HISTORY_KEY = 'seekerSearchHistory'
+const MAX_HISTORY = 10
+const searchHistory = ref<string[]>([])
+const showHistory = ref(false)
+const inputFocused = ref(false)
+
+const loadHistory = () => {
+    searchHistory.value = localStorageData.get<string[]>(SEARCH_HISTORY_KEY) || []
+}
+
+const saveHistory = (word: string) => {
+    const w = word.trim()
+    if (!w) return
+    // 去重后置顶，超出上限截断
+    const next = [w, ...searchHistory.value.filter(item => item !== w)].slice(0, MAX_HISTORY)
+    searchHistory.value = next
+    localStorageData.set(SEARCH_HISTORY_KEY, next)
+}
+
+// ===== 防抖工具 =====
+function debounce<T extends (...args: any[]) => void>(fn: T, delay = 300): T {
+    let timer: ReturnType<typeof setTimeout> | null = null
+    return ((...args: any[]) => {
+        if (timer) clearTimeout(timer)
+        timer = setTimeout(() => fn(...args), delay)
+    }) as T
+}
+
+// ===== 结果缓存（5分钟 TTL）=====
+const CACHE_TTL = 5 * 60 * 1000
+const searchCache = new Map<string, { time: number; data: any }>()
+
+const cacheKey = (params: Record<string, any>) =>
+    JSON.stringify({
+        page: params.page ?? 1,
+        keyword: params.keyword ?? '',
+        nature: params.nature ?? '',
+    })
 
 // 招聘官不应停留在求职者首页，立即跳走
 const _ui = (() => { try { return JSON.parse(uni.getStorageSync('userInfo') || '{}') } catch { return {} } })()
@@ -118,12 +190,27 @@ type Job = { id: string; title: string; salaryRange: string; city: string; minDe
 const jobs = ref<Job[]>([])
 const loading = ref(false)
 const activeNature = ref<string | null>(null)
+const currentPage = ref(1)
+const totalPages = ref(1)
+const totalCount = ref(0)
 
-const fetchJobs = async (params?: { keyword?: string; nature?: string }) => {
+const fetchJobs = async (params?: { keyword?: string; nature?: string; page?: number }) => {
+    const page = params?.page ?? currentPage.value
+    const reqParams = { page, limit: 10, ...params }
+
+    // 命中缓存则直接使用，避免重复请求
+    const key = cacheKey(reqParams)
+    const cached = searchCache.get(key)
+    if (cached && Date.now() - cached.time < CACHE_TTL) {
+        applyResult(cached.data, page)
+        return
+    }
+
     loading.value = true
     try {
-        const res: any = await apiGetJobs({ page: 1, limit: 10, ...params })
-        jobs.value = res.items || []
+        const res: any = await apiGetJobs(reqParams)
+        searchCache.set(key, { time: Date.now(), data: res })
+        applyResult(res, page)
     } catch {
         // 错误由 request.ts 统一处理
     } finally {
@@ -131,44 +218,107 @@ const fetchJobs = async (params?: { keyword?: string; nature?: string }) => {
     }
 }
 
-onMounted(() => fetchJobs())
-
-const handleSearchConfirm = () => {
-    const text = keyword.value.trim()
-    fetchJobs(text ? { keyword: text } : undefined)
+// 将接口/缓存结果写入页面状态
+const applyResult = (res: any, page: number) => {
+    jobs.value = res.items || []
+    const total = res.total ?? 0
+    const limit = res.limit ?? 10
+    totalCount.value = total
+    totalPages.value = res.totalPages ?? (total ? Math.ceil(total / limit) : 1)
+    currentPage.value = page
 }
 
-const handleSearchInput = () => {
-    if (!keyword.value.trim()) {
-        activeNature.value = null
-        fetchJobs()
+onMounted(() => {
+    loadHistory()
+    fetchJobs()
+})
+
+// 执行搜索：校验、保存历史、收起下拉
+const runSearch = (word: string) => {
+    const text = word.trim()
+    if (!text) {
+        uni.showToast({ title: '请输入搜索关键词', icon: 'none' })
+        return
     }
+    saveHistory(text)
+    showHistory.value = false
+    inputFocused.value = false
+    activeNature.value = null
+    fetchJobs({ keyword: text, page: 1 })
+}
+
+const handleSearchConfirm = () => {
+    runSearch(keyword.value)
+}
+
+// 输入防抖：有内容时实时搜索，清空时重置列表
+const debouncedSearch = debounce((text: string) => {
+    fetchJobs({ keyword: text, page: 1 })
+}, 300)
+
+const handleSearchInput = () => {
+    const text = keyword.value.trim()
+    if (!text) {
+        activeNature.value = null
+        showHistory.value = searchHistory.value.length > 0
+        fetchJobs({ page: 1 })
+        return
+    }
+    showHistory.value = false
+    debouncedSearch(text)
+}
+
+const handleSearchFocus = () => {
+    inputFocused.value = true
+    if (!keyword.value.trim() && searchHistory.value.length) {
+        showHistory.value = true
+    }
+}
+
+const handleSearchBlur = () => {
+    inputFocused.value = false
+    // 延迟收起，保证历史项的点击事件先触发
+    setTimeout(() => { showHistory.value = false }, 200)
+}
+
+const handleClearInput = () => {
+    keyword.value = ''
+    activeNature.value = null
+    showHistory.value = searchHistory.value.length > 0
+    fetchJobs({ page: 1 })
+}
+
+const handleHistoryTap = (word: string) => {
+    keyword.value = word
+    runSearch(word)
+}
+
+const handleClearHistory = () => {
+    searchHistory.value = []
+    localStorageData.remove(SEARCH_HISTORY_KEY)
+    showHistory.value = false
 }
 
 const handleBannerChange = (e: any) => {
     bannerIndex.value = e?.detail?.current || 0
 }
 
-const handleSearchTap = () => {
-    uni.showToast({ title: '搜索功能即将上线', icon: 'none' })
-}
-
 const handleQuickTap = (key: QuickKey) => {
     if (key === 'fulltime') {
         if (activeNature.value === 'FULL_TIME') {
             activeNature.value = null
-            fetchJobs()
+            fetchJobs({ page: 1 })
         } else {
             activeNature.value = 'FULL_TIME'
-            fetchJobs({ nature: 'FULL_TIME' })
+            fetchJobs({ nature: 'FULL_TIME', page: 1 })
         }
     } else if (key === 'parttime') {
         if (activeNature.value === 'PART_TIME') {
             activeNature.value = null
-            fetchJobs()
+            fetchJobs({ page: 1 })
         } else {
             activeNature.value = 'PART_TIME'
-            fetchJobs({ nature: 'PART_TIME' })
+            fetchJobs({ nature: 'PART_TIME', page: 1 })
         }
     } else if (key === 'deliveries') {
         uni.navigateTo({ url: '/pages/mine/submitted' as any })
@@ -178,8 +328,19 @@ const handleQuickTap = (key: QuickKey) => {
 }
 
 const handleRefresh = () => {
-    activeNature.value = null
-    fetchJobs()
+    // 翻到下一页，如果已到最后一页则回到第1页
+    const nextPage = currentPage.value >= totalPages.value ? 1 : currentPage.value + 1
+    const params: any = { page: nextPage }
+
+    // 保持当前筛选条件
+    if (activeNature.value) {
+        params.nature = activeNature.value
+    }
+    if (keyword.value.trim()) {
+        params.keyword = keyword.value.trim()
+    }
+
+    fetchJobs(params)
 }
 
 const isNatureActive = (key: QuickKey) => {
@@ -267,6 +428,106 @@ const degreeMap: Record<string, string> = {
     height: 78rpx;
     font-size: 28rpx;
     background: transparent;
+    min-width: 0;
+}
+
+.search__clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12rpx;
+    flex: 0 0 auto;
+}
+
+.search__btn {
+    display: flex;
+    align-items: center;
+    gap: 6rpx;
+    height: 58rpx;
+    padding: 0 22rpx;
+    margin-left: 8rpx;
+    border-radius: 12rpx;
+    background: rgba(30, 91, 255, 0.92);
+    box-shadow: 0 6rpx 18rpx rgba(30, 91, 255, 0.32);
+    flex: 0 0 auto;
+}
+
+.search__btn-text {
+    font-size: 26rpx;
+    color: #FFF;
+    font-weight: 700;
+}
+
+/* 搜索历史下拉 */
+.history {
+    position: absolute;
+    left: 26rpx;
+    right: 26rpx;
+    z-index: 20;
+    margin-top: -12rpx;
+    padding: 22rpx 24rpx 26rpx;
+    border-radius: 16rpx;
+    background: #FFF;
+    box-shadow: 0 20rpx 48rpx rgba(30, 60, 140, 0.20);
+}
+
+.history__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18rpx;
+}
+
+.history__title {
+    font-size: 26rpx;
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.72);
+}
+
+.history__clear {
+    display: flex;
+    align-items: center;
+    gap: 6rpx;
+}
+
+.history__clear-text {
+    font-size: 24rpx;
+    color: rgba(0, 0, 0, 0.4);
+}
+
+.history__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16rpx;
+}
+
+.history__tag {
+    max-width: 100%;
+    padding: 10rpx 24rpx;
+    border-radius: 999rpx;
+    background: rgba(30, 91, 255, 0.08);
+    color: rgba(0, 0, 0, 0.68);
+    font-size: 26rpx;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history__tag--pressed {
+    background: rgba(30, 91, 255, 0.18);
+}
+
+/* 搜索结果计数 */
+.result-count {
+    font-size: 28rpx;
+    color: #FFF;
+    font-weight: 700;
+}
+
+.result-count__num {
+    color: #ffe08a;
+    font-weight: 900;
+    padding: 0 4rpx;
 }
 
 .search__placeholder {

@@ -142,7 +142,7 @@ import { computed, onMounted, ref } from 'vue'
 import { apiGetCertifications, apiConfirmWorkCert, apiRequestWorkCert, apiGetCertInfo } from '@/api/index'
 
 // 顶部导航栏适配：状态栏高度、胶囊按钮尺寸（仅 mp-weixin 可读到真实 rect）
-const systemInfo = uni.getSystemInfoSync()
+const systemInfo = uni.getWindowInfo()
 const statusBarHeight = ref(systemInfo.statusBarHeight || 0)
 const navBarHeight = ref(44)
 const capsuleWidth = ref(88)

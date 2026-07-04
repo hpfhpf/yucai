@@ -241,7 +241,7 @@ const handleRetryTap = () => {
     void loadCurrentMore(true)
 }
 
-const systemInfo = uni.getSystemInfoSync()
+const systemInfo = uni.getWindowInfo()
 const statusBarHeight = ref(systemInfo.statusBarHeight || 0)
 const navBarHeight = ref(44)
 const capsuleWidth = ref(88)

@@ -32,6 +32,7 @@ interface NavigateToOptions {
        "/pages/recruiter/index" |
        "/pages/recruiter/jobPosting" |
        "/pages/recruiter/myJobs" |
+       "/pages/recruiter/newsDetail" |
        "/pages/recruiter/registration" |
        "/pages/recruiter/reset" |
        "/pages/recruiter/resumeCenter" |

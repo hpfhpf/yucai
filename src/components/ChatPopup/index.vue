@@ -95,7 +95,7 @@ const visible = computed({
     set: (val) => emit('update:modelValue', val),
 })
 
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 const scrollTop = ref(0)
 
 // 模拟初始历史消息

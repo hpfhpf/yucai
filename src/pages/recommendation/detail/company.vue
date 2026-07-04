@@ -184,7 +184,7 @@ const openJobs = ref<JobCard[]>([
     { id: 'j2', title: '工业设计师', salary: '7K-9K', district: '青羊区', education: '学历不限', gender: '男女不限', time: '12:26发布' },
 ])
 
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 
 const handlePhotoTap = () => toast.info('查看图片')
 const handleAddressTap = () => toast.info('打开地图')

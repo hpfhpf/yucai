@@ -112,7 +112,7 @@ const scrollTop = ref(0)
 const deliverVisible = ref(false)
 const deliverNote = ref('')
 
-const systemInfo = uni.getSystemInfoSync()
+const systemInfo = uni.getWindowInfo()
 const safeBottom = ref(systemInfo.safeAreaInsets?.bottom || 0)
 
 const pushMeMessage = (text: string) => {

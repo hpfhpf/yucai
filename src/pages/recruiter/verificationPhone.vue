@@ -15,13 +15,13 @@
                     <view class="field">
                         <FaIcon name="phone" :size="36" color="rgba(0, 0, 0, 0.46)" />
                         <view class="field__prefix">86+</view>
-                        <wd-input v-model="form.phone" compact custom-class="fieldInput" type="number" maxlength="11"
+                        <wd-input v-model="form.phone" compact custom-class="fieldInput" type="number" :maxlength="11"
                             placeholder="请输入手机号" />
                     </view>
 
                     <view class="field field--gap">
                         <FaIcon name="circle-check" :size="36" color="rgba(0, 0, 0, 0.46)" />
-                        <wd-input v-model="form.captcha" compact custom-class="fieldInput" maxlength="6"
+                        <wd-input v-model="form.captcha" compact custom-class="fieldInput" :maxlength="6"
                             placeholder="请输入图形验证码" />
                         <view class="captcha" hover-class="captcha--pressed" @click="refreshCaptcha">
                             <view class="captcha__txt">{{ captchaText }}</view>
@@ -42,7 +42,7 @@
 
                     <view class="field field--gap">
                         <FaIcon name="envelope" :size="36" color="rgba(0, 0, 0, 0.46)" />
-                        <wd-input v-model="form.smsCode" compact custom-class="fieldInput" maxlength="6"
+                        <wd-input v-model="form.smsCode" compact custom-class="fieldInput" :maxlength="6"
                             placeholder="短信验证码" />
                         <wd-button size="small" :disabled="smsCountdown > 0" custom-class="smsBtn"
                             @click="handleGetSms">
@@ -77,7 +77,7 @@ import HeaderNav from '@/components/HeaderNav.vue'
 
 const toast = useToast('verifyToast')
 
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 
 const form = ref({
     phone: '',

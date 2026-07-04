@@ -7,6 +7,15 @@ const Notify = useNotify();
 const requestInterceptor = (options: requestOptions) => {
   options.timeout = Number(__VITE_SERVER_TIMEOUT__) || 10000;
   options.url = __VITE_SERVER_BASEURL__ + options.url;
+  // 剔除 data 中值为 undefined/null 的字段：GET 请求下 uni.request 会把
+  // 这类字段序列化成 role=undefined 等字面量传给后端，导致 400/500。
+  if (options.data && typeof options.data === "object") {
+    const cleaned: Record<string, any> = {};
+    for (const [k, v] of Object.entries(options.data as Record<string, any>)) {
+      if (v !== undefined && v !== null) cleaned[k] = v;
+    }
+    options.data = cleaned;
+  }
   const token = uni.getStorageSync('token') || '';
   options.header = {
     Authorization: `Bearer ${token}`,

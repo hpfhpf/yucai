@@ -269,7 +269,6 @@ const menuIcon = (key: string) => menuIconMap[key] || 'circle'
     align-items: center;
     justify-content: center;
     box-shadow: 0 10rpx 28rpx rgba(1, 18, 74, 0.18);
-    overflow: hidden;
     transition: transform var(--app-timing-fast) var(--app-ease-standard);
 
     &:active {

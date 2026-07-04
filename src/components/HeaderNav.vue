@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<{
     theme: 'FFF'
 })
 const city = ref('北京')
-const systemInfo = uni.getSystemInfoSync()
+const systemInfo = uni.getWindowInfo()
 const statusBarHeight = ref(systemInfo.statusBarHeight || 0)
 
 const handleCityTap = () => {

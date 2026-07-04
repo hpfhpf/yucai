@@ -20,8 +20,12 @@
                     </view>
 
                     <view class="profile__right">
-                        <view class="avatar">
-                            <view class="avatar__shine" />
+                        <view class="avatar" :class="{ 'avatar--fa': avatarParsed.type === 'fa' }"
+                            :style="avatarStyle">
+                            <FaIcon v-if="avatarParsed.type === 'fa'" :name="avatarParsed.icon" :size="60"
+                                color="#fff" />
+                            <image v-else-if="avatarParsed.type === 'image'" class="avatar__img"
+                                :src="avatarParsed.url" mode="aspectFill" />
                         </view>
                     </view>
                 </view>
@@ -168,15 +172,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import BottomNav from '@/components/BottomNav.vue'
 import FaIcon from '@/components/FaIcon/index.vue'
+import { parseAvatar } from '@/utils/avatar'
 import { goPageAddProject, goPageAddJob, goPageAddEducation, goPageAddInformation, goPageAddSelfDesc } from '@/utils/route'
 import { apiGetResumeProfile, apiGetSelfDesc, apiGetEducations, apiGetWorkExps, apiGetProjectExps, apiGetUserMe, apiDeleteWorkExp, apiDeleteProjectExp, apiGetCertifications, apiRequestWorkCert, apiCancelWorkCert } from '@/api/index'
 
 const user = ref({ name: '', role: '', phone: '' })
 const selfDesc = ref('')
+
+// 头像状态：与「我的」页共用 avatarUrl 存储格式
+const avatarUrl = ref('')
+const avatarParsed = computed(() => parseAvatar(avatarUrl.value))
+const avatarStyle = computed(() =>
+    avatarParsed.value.type === 'fa'
+        ? { background: avatarParsed.value.bg }
+        : {}
+)
 
 type EduItem = { id: string; school: string; range: string }
 const education = ref<EduItem[]>([])
@@ -209,6 +223,7 @@ const loadResumeData = async () => {
             role: (profileRes as any).roleTitle || '求职者',
             phone: (meRes as any).phone || '',
         }
+        avatarUrl.value = (meRes as any).avatarUrl || ''
         selfDesc.value = (descRes as any).selfDesc || ''
         education.value = ((eduRes as any) as any[]).map((e: any) => ({
             id: e.id,
@@ -473,9 +488,21 @@ const handleCancelCert = (id: string) => {
     width: 112rpx;
     height: 112rpx;
     border-radius: 50%;
-    background: #FFF url('@/assets/images/avatar.png') no-repeat 0 0;
-    background-size: contain;
+    background: #FFF url('@/assets/images/avatar.png') no-repeat center center / contain;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar--fa {
+    background-image: none;
+}
+
+.avatar__img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
 }
 
 .divider {

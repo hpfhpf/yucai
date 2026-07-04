@@ -248,6 +248,14 @@
       "style": {}
     },
     {
+      "path": "pages/recruiter/newsDetail",
+      "type": "page",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": ""
+      }
+    },
+    {
       "path": "pages/recruiter/registration",
       "type": "page",
       "style": {

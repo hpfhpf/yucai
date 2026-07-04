@@ -129,7 +129,7 @@ type SalaryFilterOption = {
     value: string
 }
 
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 const keyword = ref('')
 
 const areaPopupOpen = ref(false)

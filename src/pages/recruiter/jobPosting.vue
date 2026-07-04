@@ -191,7 +191,7 @@ const toast = useToast('jobPostingToast')
 type JobNature = 'full' | 'part' | 'intern'
 type SheetKey = 'province' | 'city' | 'district' | 'salary' | 'education' | 'experience'
 
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 
 const form = ref({
     title: '',

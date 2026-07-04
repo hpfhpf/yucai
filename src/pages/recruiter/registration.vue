@@ -39,7 +39,7 @@
                         <view class="formRow">
                             <view class="formRow__label">联系电话</view>
                             <wd-input v-model="form.contactPhone" compact custom-class="formInput" type="number"
-                                maxlength="11" placeholder="工作联系电话（选填）" />
+                                :maxlength="11" placeholder="工作联系电话（选填）" />
                         </view>
                     </view>
                 </template>
@@ -139,7 +139,7 @@ import HeaderNav from '@/components/HeaderNav.vue'
 import { apiSearchCompanies, apiCreateCompany, apiRegisterRecruiter, apiGetRecruiterProfile, apiUpdateRecruiterProfile } from '@/api/index'
 
 const toast = useToast('registrationToast')
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 
 const steps = ['联系人信息', '企业信息', '完成']
 const currentStep = ref(0)

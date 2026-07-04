@@ -101,7 +101,7 @@ interface Company {
     _count?: { jobs: number; recruiters: number }
 }
 
-const statusBar = ref(uni.getSystemInfoSync().statusBarHeight || 0)
+const statusBar = ref(uni.getWindowInfo().statusBarHeight || 0)
 
 const tabs = [
     { key: '', label: '全部' },

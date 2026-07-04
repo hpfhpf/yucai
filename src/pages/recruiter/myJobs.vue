@@ -43,7 +43,7 @@ import HeaderNav from '@/components/HeaderNav.vue'
 import { apiGetMyPostedJobs, apiCloseJob } from '@/api/index'
 
 const toast = useToast('myJobsToast')
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 
 type Job = {
     id: string

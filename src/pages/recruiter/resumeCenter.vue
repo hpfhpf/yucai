@@ -95,7 +95,7 @@
                         <view class="inviteRow__field">
                             <view class="ocrUpload">
                                 <wd-upload v-model:file-list="ocrFiles" action="" :limit="1" :auto-upload="false"
-                                    accept="image" size-type="['compressed']" source-type="['album', 'camera']"
+                                    accept="image" :size-type="['compressed']" :source-type="['album', 'camera']"
                                     custom-evoke-class="ocrUpload__trigger" custom-preview-class="ocrUpload__preview"
                                     @change="onOcrUploadChange">
                                     <view class="ocrUpload__empty">
@@ -138,7 +138,7 @@
             </view>
         </wd-popup>
 
-        <wd-datetime-picker type="datehour" v-model="timePickerValue" v-model:visible="showTimePicker"
+        <wd-datetime-picker type="datetime" v-model="timePickerValue" v-model:visible="showTimePicker"
             title="选择面试时间" custom-style="z-index: 2200 !important;" @confirm="handleTimeConfirm" />
 
         <wd-toast selector="resumeCenterToast" />
@@ -156,7 +156,7 @@ import { apiGetRecruiterDeliveries, apiUpdateDeliveryStatus, apiSendInvite, apiG
 import { parseTimeText } from '@/utils/timeParser'
 
 const toast = useToast('resumeCenterToast')
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 
 type TabKey = 'ALL' | 'PENDING' | 'INTERVIEW' | 'ACCEPTED' | 'REJECTED'
 

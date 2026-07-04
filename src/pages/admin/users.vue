@@ -72,7 +72,7 @@ import FaIcon from '@/components/FaIcon/index.vue'
 import Empty from '@/components/Empty/index.vue'
 import { apiAdminListUsers, apiAdminSetUserStatus } from '@/api/admin'
 
-const statusBar = ref(uni.getSystemInfoSync().statusBarHeight || 0)
+const statusBar = ref(uni.getWindowInfo().statusBarHeight || 0)
 
 type UserItem = {
     id: string; phone: string; role: string; nickname?: string

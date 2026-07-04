@@ -112,7 +112,7 @@ import HeaderNav from '@/components/HeaderNav.vue'
 
 const toast = useToast('resetToast')
 
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 
 const form = ref({
     avatar: '',

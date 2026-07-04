@@ -183,7 +183,7 @@
         </wd-popup>
 
         <!-- 日期时间选择器 -->
-        <wd-datetime-picker type="datehour" v-model="timePickerValue" v-model:visible="showTimePicker"
+        <wd-datetime-picker type="datetime" v-model="timePickerValue" v-model:visible="showTimePicker"
             title="选择面试时间" custom-style="z-index: 2200 !important;" @confirm="handleTimeConfirm" />
 
         <!-- 聊天沟通弹窗 -->
@@ -202,7 +202,7 @@ import ChatPopup from '@/components/ChatPopup/index.vue'
 import { apiGetSeekerResume, apiSendInvite, apiGetMyPostedJobs } from '@/api/index'
 
 const toast = useToast('resumeDetailToast')
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 
 const loading = ref(false)
 const profile = ref<any>(null)

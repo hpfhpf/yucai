@@ -41,7 +41,7 @@ const emit = defineEmits<{
     (e: 'change', index: number): void
 }>()
 
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 const navStyle = computed(() => ({ '--bottom-nav-active': props.themeColor } as Record<string, string>))
 
 const userInfo = (() => {

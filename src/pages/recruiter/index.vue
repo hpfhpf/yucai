@@ -49,33 +49,36 @@
 
                 <scroll-view class="peopleScroll" scroll-x show-scrollbar="false">
                     <view class="peopleRow">
-                        <view v-for="p in people" :key="p.id" class="personCard" hover-class="personCard--pressed"
-                            @click="handlePersonTap(p.id)">
+                        <view v-for="person in people" :key="person.id" class="personCard"
+                            hover-class="personCard--pressed" @click="handlePersonTap(person.id)">
                             <view class="personCard__head">
-                                <view class="personCard__avatar">
-                                    <image v-if="p.avatar" class="personCard__avatarImg" :src="p.avatar"
-                                        mode="aspectFill" />
+                                <view class="personCard__avatar"
+                                    :style="person.avatar.type === 'fa' ? { background: person.avatar.bg } : undefined">
+                                    <FaIcon v-if="person.avatar.type === 'fa'" :name="person.avatar.icon" :size="40"
+                                        color="#fff" />
+                                    <image v-else-if="person.avatar.type === 'image'" class="personCard__avatarImg"
+                                        :src="person.avatar.url" mode="aspectFill" />
                                     <view v-else class="personCard__avatarPh" />
                                 </view>
                                 <view class="personCard__meta">
-                                    <view class="personCard__name">{{ p.name }}</view>
-                                    <view class="personCard__role">{{ p.role }}</view>
+                                    <view class="personCard__name">{{ person.name }}</view>
+                                    <view class="personCard__role">{{ person.role }}</view>
                                 </view>
-                                <view class="personCard__time">{{ p.time }}</view>
+                                <view class="personCard__time">{{ person.time }}</view>
                             </view>
 
                             <view class="personCard__facts">
                                 <wd-tag size="small" plain custom-class="factTag factTag--exp">
                                     <FaIcon name="clock" :size="20" style="margin-right: 4rpx" />
-                                    {{ p.exp }}
+                                    {{ person.exp }}
                                 </wd-tag>
                                 <wd-tag size="small" plain custom-class="factTag factTag--edu">
                                     <FaIcon name="book-open" :size="20" style="margin-right: 4rpx" />
-                                    {{ p.edu }}
+                                    {{ person.edu }}
                                 </wd-tag>
                                 <wd-tag size="small" plain custom-class="factTag factTag--loc">
                                     <FaIcon name="location-dot" :size="20" style="margin-right: 4rpx" />
-                                    {{ p.loc }}
+                                    {{ person.loc }}
                                 </wd-tag>
                             </view>
                         </view>
@@ -83,8 +86,8 @@
                 </scroll-view>
                 <view class="section">
                     <view class="section__title">最新动态</view>
-                    <view class="section__right" hover-class="section__right--pressed" @click="handleRefresh">
-                        <FaIcon name="arrows-rotate" :size="26" color="rgba(0, 0, 0, 0.34)" :spin="refreshing" />
+                    <view class="section__right" hover-class="section__right--pressed" @click="handleNewsRefresh">
+                        <FaIcon name="arrows-rotate" :size="26" color="rgba(0, 0, 0, 0.34)" :spin="newsRefreshing" />
                         <view class="section__text">换一批</view>
                     </view>
                 </view>
@@ -109,22 +112,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import BottomNav from '@/components/BottomNav.vue'
 import HeaderNav from '@/components/HeaderNav.vue'
 import { apiGetSeekers } from '@/api/index'
+import { recruiterNews, type NewsItem } from '@/data/recruiterNews'
+import { parseAvatar, type ParsedAvatar } from '@/utils/avatar'
+import FaIcon from '@/components/FaIcon/index.vue'
 
 type Person = {
     id: string
     time: string
-    avatar?: string
+    avatar: ParsedAvatar
     name: string
     role: string
+    exp: string
     edu: string
     loc: string
 }
 
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 const keyword = ref('')
 
 const banners = ref([
@@ -136,9 +143,40 @@ const bannerIndex = ref(0)
 
 const people = ref<Person[]>([])
 const refreshing = ref(false)
+const newsRefreshing = ref(false)
+
+// 最新动态：数据来自 @/data/recruiterNews，换一批时从池中轮换取用
+const newsCursor = ref(0)
+const news = ref<NewsItem[]>([])
+
+const rollNews = () => {
+    const size = 4
+    const pool = recruiterNews
+    const list: NewsItem[] = []
+    for (let i = 0; i < size; i++) {
+        list.push(pool[(newsCursor.value + i) % pool.length])
+    }
+    newsCursor.value = (newsCursor.value + size) % pool.length
+    news.value = list
+}
 
 const degreeMap: Record<string, string> = {
     ANY: '学历不限', ASSOCIATE: '大专', BACHELOR: '本科', MASTER: '硕士', DOCTOR: '博士',
+}
+
+// 根据工作经历累计总年限
+const calcExp = (workExps?: any[]): string => {
+    if (!workExps?.length) return '经验不限'
+    let months = 0
+    for (const w of workExps) {
+        if (!w?.startDate) continue
+        const start = new Date(w.startDate).getTime()
+        const end = w.endDate ? new Date(w.endDate).getTime() : Date.now()
+        if (end > start) months += (end - start) / (1000 * 60 * 60 * 24 * 30)
+    }
+    const years = Math.round(months / 12)
+    if (years <= 0) return '1年以内'
+    return `${years}年经验`
 }
 
 const formatRelative = (iso: string) => {
@@ -151,30 +189,51 @@ const formatRelative = (iso: string) => {
     return `${Math.floor(h / 24)}天前`
 }
 
-const loadSeekers = async () => {
+const PEOPLE_LIMIT = 10
+const peoplePage = ref(1)
+
+const loadSeekers = async (): Promise<void> => {
     try {
-        const res: any = await apiGetSeekers({ page: 1, limit: 10 })
-        people.value = (res?.items || []).map((s: any) => ({
+        const res: any = await apiGetSeekers({ page: peoplePage.value, limit: PEOPLE_LIMIT })
+        const total = res?.total || 0
+        const items = (res?.items || []).map((s: any) => ({
             id: s.userId,
             name: s.realName || s.user?.nickname || '求职者',
             role: s.roleTitle || s.workExps?.[0]?.title || '暂无职位',
+            exp: calcExp(s.workExps),
             edu: degreeMap[s.educations?.[0]?.degree] || '学历不限',
             loc: s.city || '地点不限',
             time: formatRelative(s.updatedAt),
-            avatar: s.user?.avatarUrl || '',
+            avatar: parseAvatar(s.user?.avatarUrl),
         }))
+        // 换一批：翻到下一页；若已到末页则下次回到第一页循环
+        const maxPage = Math.max(1, Math.ceil(total / PEOPLE_LIMIT))
+        peoplePage.value = peoplePage.value >= maxPage ? 1 : peoplePage.value + 1
+        // 若本页无数据（如总数变化），回到第一页
+        if (!items.length && peoplePage.value !== 1) {
+            peoplePage.value = 1
+            await loadSeekers()
+            return
+        }
+        people.value = items
     } catch { /* 错误由 request.ts 统一处理 */ }
 }
 
-onMounted(loadSeekers)
+onMounted(() => {
+    loadSeekers()
+    rollNews()
+})
 
-const handleSearchTap = () => { }
+const goSearch = (text: string) => {
+    uni.navigateTo({ url: `/pages/recruiter/talents?keyword=${encodeURIComponent(text)}` as any })
+}
+
+const handleSearchTap = () => { /* 搜索框内联输入，回车确认后跳转，见 handleSearchConfirm */ }
 
 const handleSearchConfirm = () => {
     const text = keyword.value.trim()
-    if (text) {
-        uni.navigateTo({ url: `/pages/recruiter/talents?keyword=${encodeURIComponent(text)}` as any })
-    }
+    if (text) goSearch(text)
+    else uni.navigateTo({ url: '/pages/recruiter/talents' as any })
 }
 
 const handleBannerChange = (e: any) => {
@@ -182,16 +241,26 @@ const handleBannerChange = (e: any) => {
 }
 
 const handleRefresh = async () => {
+    if (refreshing.value) return
     refreshing.value = true
     await loadSeekers()
     refreshing.value = false
+}
+
+const handleNewsRefresh = () => {
+    if (newsRefreshing.value) return
+    newsRefreshing.value = true
+    rollNews()
+    setTimeout(() => { newsRefreshing.value = false }, 420)
 }
 
 const handlePersonTap = (userId: string) => {
     uni.navigateTo({ url: `/pages/recruiter/resumeDetail?userId=${userId}` as any })
 }
 
-const handleNewsTap = (_id: string) => { }
+const handleNewsTap = (id: string) => {
+    uni.navigateTo({ url: `/pages/recruiter/newsDetail?id=${id}` as any })
+}
 </script>
 
 <style scoped lang="scss">
@@ -495,6 +564,9 @@ const handleNewsTap = (_id: string) => { }
     overflow: hidden;
     background: rgba(0, 0, 0, 0.06);
     flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .personCard__avatarImg {

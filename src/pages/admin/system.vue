@@ -79,7 +79,7 @@ import AdminNav from '@/components/AdminNav/index.vue'
 import FaIcon from '@/components/FaIcon/index.vue'
 import { apiAdminSystemOverview } from '@/api/admin'
 
-const statusBar = ref(uni.getSystemInfoSync().statusBarHeight || 0)
+const statusBar = ref(uni.getWindowInfo().statusBarHeight || 0)
 const roleList = ref<any[]>([])
 const recentUsers = ref<any[]>([])
 const recentJobs = ref<any[]>([])

@@ -214,6 +214,13 @@ export default defineUniPages({
       },
     },
     {
+      path: "pages/recruiter/newsDetail",
+      style: {
+        navigationStyle: "custom",
+        navigationBarTitleText: "",
+      },
+    },
+    {
       path: "pages/recruiter/registration",
       needLogin: true,
       style: {

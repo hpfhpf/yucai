@@ -228,7 +228,7 @@ const job = ref({
 
 const similarJobs = ref<SimilarJob[]>([])
 const isCollected = ref(false)
-const safeBottom = ref(uni.getSystemInfoSync().safeAreaInsets?.bottom || 0)
+const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 
 onMounted(async () => {
     const pages = getCurrentPages()
