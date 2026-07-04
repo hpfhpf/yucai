@@ -65,9 +65,8 @@
                     </view>
                 </view>
 
-                <view v-else-if="!loading" class="empty">
-                    <FaIcon name="building-circle-xmark" :size="80" color="rgba(0,0,0,0.16)" />
-                    <view class="empty__txt">暂无企业数据</view>
+                <view v-if="list.length === 0 && !loading" class="empty-wrap">
+                    <Empty tip="暂无企业数据" />
                 </view>
 
                 <view v-if="loading" class="loading">
@@ -87,6 +86,7 @@
 import { onMounted, ref } from 'vue'
 import AdminNav from '@/components/AdminNav/index.vue'
 import FaIcon from '@/components/FaIcon/index.vue'
+import Empty from '@/components/Empty/index.vue'
 import { apiAdminListCompanies, apiAdminVerifyCompany } from '@/api/admin'
 
 interface Company {
@@ -315,18 +315,7 @@ onMounted(() => fetchList(true))
 .btn--cancel { background: rgba(0, 0, 0, 0.28); }
 .btn--pressed { opacity: 0.8; }
 
-.empty {
-    padding: 120rpx 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20rpx;
-}
-
-.empty__txt {
-    font-size: 26rpx;
-    color: var(--app-text-muted);
-}
+.empty-wrap { padding: 80rpx 0; }
 
 .loading {
     display: flex;

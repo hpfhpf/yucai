@@ -23,9 +23,8 @@
                     </view>
                 </view>
 
-                <view v-if="!loading && !list.length" class="ivEmpty">
-                    <FaIcon name="id-card" :size="96" color="rgba(0,0,0,0.14)" />
-                    <view class="ivEmpty__text">{{ emptyText }}</view>
+                <view v-if="list.length === 0 && !loading" class="empty-wrap">
+                    <Empty :tip="emptyText" />
                 </view>
 
                 <view v-for="it in list" :key="it.id" class="ivCard">
@@ -67,6 +66,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import FaIcon from '@/components/FaIcon/index.vue'
+import Empty from '@/components/Empty/index.vue'
 import { apiAdminListIdVerifications, apiAdminReviewIdVerification } from '@/api/admin'
 
 const statusBar = ref(uni.getSystemInfoSync().statusBarHeight || 0)
@@ -227,18 +227,7 @@ onMounted(() => load(true))
     color: #fff;
 }
 
-.ivEmpty {
-    padding: 120rpx 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24rpx;
-}
-
-.ivEmpty__text {
-    font-size: 26rpx;
-    color: var(--app-text-muted);
-}
+.empty-wrap { padding: 80rpx 0; }
 
 .ivCard {
     background: #fff;

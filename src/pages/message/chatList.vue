@@ -25,6 +25,10 @@
         </view>
 
         <scroll-view class="list" scroll-y>
+            <wd-empty
+                v-if="currentList.length === 0"
+                :tip="activeTab === 'invite' ? '暂无面试邀请' : '暂无聊天消息'"
+            />
             <view v-for="item in currentList" :key="item.id" class="card" hover-class="card--pressed"
                 @click="handleItemTap(item)">
                 <view class="card__avatar">

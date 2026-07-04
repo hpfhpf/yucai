@@ -52,7 +52,9 @@
                 </view>
 
                 <view v-if="loading && !list.length" class="uTip">加载中...</view>
-                <view v-else-if="!loading && !list.length" class="uTip">暂无用户</view>
+                <view v-else-if="list.length === 0 && !loading" class="empty-wrap">
+                    <Empty tip="暂无用户数据" />
+                </view>
                 <view v-else-if="loading" class="uTip uTip--more">加载中...</view>
                 <view v-else-if="noMore && list.length" class="uTip uTip--more">没有更多了</view>
                 <view class="tailSpace" />
@@ -67,6 +69,7 @@
 import { onMounted, ref } from 'vue'
 import AdminNav from '@/components/AdminNav/index.vue'
 import FaIcon from '@/components/FaIcon/index.vue'
+import Empty from '@/components/Empty/index.vue'
 import { apiAdminListUsers, apiAdminSetUserStatus } from '@/api/admin'
 
 const statusBar = ref(uni.getSystemInfoSync().statusBarHeight || 0)
@@ -273,4 +276,6 @@ onMounted(() => load(true))
     padding: 60rpx 0;
 }
 .uTip--more { padding: 30rpx 0; }
+
+.empty-wrap { padding: 80rpx 0; }
 </style>

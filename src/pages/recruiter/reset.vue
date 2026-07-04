@@ -160,7 +160,8 @@ const handleNext = () => {
         toast.info(err)
         return
     }
-    toast.info('下一步')
+    // 校验通过，进入下一步：手机验证
+    uni.navigateTo({ url: '/pages/recruiter/verificationPhone' })
 }
 </script>
 

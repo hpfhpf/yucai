@@ -57,9 +57,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import HeaderNav from '@/components/HeaderNav.vue'
-import { apiUpdateResumeProfile } from '@/api/index'
+import { apiUpdateResumeProfile, apiGetResumeProfile } from '@/api/index'
 
 interface InformationForm {
     realName: string
@@ -75,6 +75,7 @@ const genderOptions = ['男', '女']
 const cityOptions = ['北京', '上海', '广州', '深圳', '成都']
 
 const genderEnumMap: Record<string, string> = { '男': 'MALE', '女': 'FEMALE' }
+const genderReverseMap: Record<string, string> = { 'MALE': '男', 'FEMALE': '女' }
 
 const form = ref<InformationForm>({
     realName: '',
@@ -142,6 +143,22 @@ const handleCityConfirm = ({ value }: { value: string[] }): void => {
     form.value.city = value[0]
 }
 
+onMounted(async (): Promise<void> => {
+    try {
+        const res: any = await apiGetResumeProfile()
+        if (!res) return
+        if (res.realName) form.value.realName = res.realName
+        if (res.gender) form.value.gender = genderReverseMap[res.gender] || ''
+        if (res.birthDate) form.value.birthMonth = new Date(res.birthDate)
+        if (res.workStartDate) form.value.workMonth = new Date(res.workStartDate)
+        if (res.phone) form.value.phone = res.phone
+        if (res.email) form.value.email = res.email
+        if (res.city) form.value.city = res.city
+    } catch {
+        // 错误由 request.ts 统一处理
+    }
+})
+
 const saving = ref(false)
 
 const handleSave = async (): Promise<void> => {
@@ -169,6 +186,8 @@ const handleSave = async (): Promise<void> => {
             gender: genderEnumMap[form.value.gender] as any,
             birthDate: new Date(form.value.birthMonth).toISOString(),
             city: form.value.city,
+            ...(form.value.email.trim() ? { email: form.value.email.trim() } : {}),
+            ...(form.value.workMonth ? { workStartDate: new Date(form.value.workMonth).toISOString() } : {}),
         })
         uni.showToast({ title: '保存成功', icon: 'success' })
         setTimeout(() => {

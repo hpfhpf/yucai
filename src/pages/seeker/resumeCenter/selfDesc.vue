@@ -23,9 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import HeaderNav from '@/components/HeaderNav.vue'
-import { apiUpdateSelfDesc } from '@/api/index'
+import { apiGetSelfDesc, apiUpdateSelfDesc } from '@/api/index'
 
 interface SelfDescForm {
     content: string

@@ -149,7 +149,9 @@ const handleBannerChange = (e: any) => {
     bannerIndex.value = e?.detail?.current || 0
 }
 
-const handleSearchTap = () => { }
+const handleSearchTap = () => {
+    uni.showToast({ title: '搜索功能即将上线', icon: 'none' })
+}
 
 const handleQuickTap = (key: QuickKey) => {
     if (key === 'fulltime') {

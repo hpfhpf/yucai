@@ -70,6 +70,7 @@ export const apiGetResumeProfile = () =>
 
 export const apiUpdateResumeProfile = (data: {
   realName?: string; gender?: string; birthDate?: string; city?: string; roleTitle?: string;
+  email?: string; workStartDate?: string;
 }) => request({ url: '/resume/profile', method: 'PUT', data } as any);
 
 export const apiGetSelfDesc = () =>

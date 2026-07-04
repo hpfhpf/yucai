@@ -47,7 +47,9 @@
                         </view>
                     </view>
                 </view>
-                <view class="emptyTip" v-else>暂无管理员账号</view>
+                <view v-if="admins.length === 0" class="empty-wrap">
+                    <Empty tip="暂无管理员数据" />
+                </view>
 
                 <view class="tailSpace" />
             </view>
@@ -58,6 +60,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import FaIcon from '@/components/FaIcon/index.vue'
+import Empty from '@/components/Empty/index.vue'
 import { apiAdminListAdmins, apiAdminSetUserRole } from '@/api/admin'
 
 const statusBar = ref(uni.getSystemInfoSync().statusBarHeight || 0)
@@ -200,10 +203,5 @@ onMounted(load)
 .btn--danger { background: rgba(250, 67, 80, 0.12); color: #fa4350; }
 .btn--pressed { opacity: 0.7; }
 
-.emptyTip {
-    text-align: center;
-    color: var(--app-text-muted);
-    font-size: 26rpx;
-    padding: 40rpx 0;
-}
+.empty-wrap { padding: 80rpx 0; }
 </style>

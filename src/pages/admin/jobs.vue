@@ -54,7 +54,9 @@
                 </view>
 
                 <view v-if="loading && !list.length" class="jTip">加载中...</view>
-                <view v-else-if="!loading && !list.length" class="jTip">暂无职位</view>
+                <view v-else-if="list.length === 0 && !loading" class="empty-wrap">
+                    <Empty tip="暂无职位数据" />
+                </view>
                 <view v-else-if="loading" class="jTip jTip--more">加载中...</view>
                 <view v-else-if="noMore && list.length" class="jTip jTip--more">没有更多了</view>
                 <view class="tailSpace" />
@@ -66,6 +68,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import FaIcon from '@/components/FaIcon/index.vue'
+import Empty from '@/components/Empty/index.vue'
 import { apiAdminListJobs, apiAdminSetJobStatus } from '@/api/admin'
 
 const statusBar = ref(uni.getSystemInfoSync().statusBarHeight || 0)
@@ -307,6 +310,8 @@ onMounted(() => load(true))
 }
 
 .jTip--more { padding: 28rpx 0; }
+
+.empty-wrap { padding: 80rpx 0; }
 
 .tailSpace { height: 60rpx; }
 

@@ -2,6 +2,15 @@
     <view class="page">
         <HeaderNav title="推荐记录" type="show-back" theme="000" />
         <view class="content">
+            <!-- 空状态 -->
+            <view v-if="!loading && records.length === 0" class="empty-wrap">
+                <wd-empty image="record" tip="暂无推荐记录">
+                    <template #description>
+                        <view class="empty-desc">您还没有推荐过任何人才</view>
+                    </template>
+                </wd-empty>
+            </view>
+
             <wd-card v-for="rec in records" :key="rec.id" :custom-class="`recordCard recordCard--${rec.status}`"
                 @click="handleRecordTap(rec.id)">
                 <template #title>
@@ -45,6 +54,7 @@ type RecommendationRecord = {
 }
 
 const toast = useToast('recToast')
+const loading = ref(false)
 
 const records = ref<RecommendationRecord[]>([
     {
