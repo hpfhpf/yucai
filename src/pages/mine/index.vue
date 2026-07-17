@@ -26,7 +26,7 @@
                     <wd-tag v-else type="success" round @click="goPageCertificate">已认证</wd-tag>
                 </view>
             </view>
-            <view class="document" @click="isRecruiter ? uni.navigateTo({ url: '/pages/recruiter/registration' as any }) : goPageChangePhone()">
+            <view class="document" @click="isRecruiter ? uni.navigateTo({ url: '/pages/recruiter/registration' as any }) : goPageAddInformation()">
                 <text>我的资料</text>
                 <FaIcon name="chevron-right" :size="22" color="rgba(255,255,255,0.9)" style="margin-left: 8rpx" />
             </view>
@@ -70,7 +70,7 @@ import BottomNav from '@/components/BottomNav.vue'
 import AdminNav from '@/components/AdminNav/index.vue'
 import FaIcon from '@/components/FaIcon/index.vue'
 import AvatarPicker from '@/components/AvatarPicker/index.vue'
-import { goPageSubmitted, goPageJobCollection, goPageSetting, goPageCertificate, goPageVerification, goPageChangePhone } from '@/utils/route'
+import { goPageSubmitted, goPageJobCollection, goPageSetting, goPageCertificate, goPageVerification, goPageChangePhone, goPageAddInformation } from '@/utils/route'
 import { parseAvatar, toAvatarValue } from '@/utils/avatar'
 import { apiUpdateUserMe } from '@/api'
 
@@ -145,7 +145,7 @@ onMounted(() => {
 const seekerQuickActions = [
     { key: 'deliver', label: '投递记录' },
     { key: 'favorite', label: '职位收藏' },
-    { key: 'referral', label: '推荐记录' },
+    { key: 'referral', label: '认证记录' },
 ] as const
 
 const recruiterQuickActions = [
@@ -155,6 +155,7 @@ const recruiterQuickActions = [
 ] as const
 
 const seekerMenuItems = [
+    { key: 'workCert', label: '我的认证' },
     { key: 'interview', label: '面试须知' },
     { key: 'credit', label: '信用异议' },
     { key: 'setting', label: '设置' },
@@ -208,7 +209,8 @@ const handleQuickTap = (key: QuickKey) => {
 }
 
 const handleMenuTap = (key: MenuKey) => {
-    if (key === 'setting') goPageSetting()
+    if (key === 'workCert') uni.navigateTo({ url: '/pages/seeker/resumeCenter/workCertification' as any })
+    else if (key === 'setting') goPageSetting()
     else if (key === 'interview') uni.navigateTo({ url: '/pages/mine/interview' as any })
     else if (key === 'credit') uni.navigateTo({ url: '/pages/mine/credit' as any })
     else if (key === 'feedback') uni.navigateTo({ url: '/pages/mine/feedback' as any })
@@ -221,6 +223,7 @@ const quickIconMap: Record<string, string> = {
     workbench: 'gauge-high', users: 'users-gear', companies: 'building-shield',
 }
 const menuIconMap: Record<string, string> = {
+    workCert: 'id-card',
     interview: 'circle-info', credit: 'scale-balanced',
     setting: 'gear', feedback: 'comment-dots',
 }

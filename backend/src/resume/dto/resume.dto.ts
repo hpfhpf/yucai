@@ -24,12 +24,21 @@ export enum Degree {
   DOCTOR = 'DOCTOR',
 }
 
+export enum CareerLevel {
+  IC = 'IC',
+  LEAD = 'LEAD',
+  MGR_DIR = 'MGR_DIR',
+  VP_C = 'VP_C',
+}
+
 export class UpdateProfileDto {
   @IsOptional() @IsString() realName?: string;
   @IsOptional() @IsEnum(Gender) gender?: Gender;
   @IsOptional() @IsDateString() birthDate?: string;
   @IsOptional() @IsString() city?: string;
   @IsOptional() @IsString() roleTitle?: string;
+  @IsOptional() @IsInt() @Min(0) currentAnnualSalary?: number; // 当前综合年薪，万/年
+  @IsOptional() @IsEnum(CareerLevel) currentLevel?: CareerLevel; // 当前职级
 }
 
 export class UpdateSelfDescDto {

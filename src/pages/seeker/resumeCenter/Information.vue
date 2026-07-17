@@ -45,6 +45,22 @@
                             <wd-picker v-model:visible="showCityPicker" :columns="[cityOptions]"
                                 @confirm="handleCityConfirm" />
                         </wd-form-item>
+
+                        <wd-form-item title="当前综合年薪" prop="currentAnnualSalary">
+                            <wd-input v-model="form.currentAnnualSalaryStr" type="number" placeholder="如：50（万元/年，含年终奖）"
+                                align-right compact>
+                                <template #suffix>
+                                    <text style="color: var(--app-text-secondary); font-size: 24rpx;">万/年</text>
+                                </template>
+                            </wd-input>
+                        </wd-form-item>
+
+                        <wd-form-item title="当前职级" prop="currentLevel">
+                            <wd-cell custom-class="calendarCell" :value="currentLevelText || '请选择'" is-link
+                                @click="showLevelPicker = true" />
+                            <wd-picker v-model:visible="showLevelPicker" :columns="[levelOptions]"
+                                @confirm="handleLevelConfirm" />
+                        </wd-form-item>
                     </wd-form>
                 </view>
 
@@ -69,10 +85,22 @@ interface InformationForm {
     phone: string
     email: string
     city: string
+    currentAnnualSalaryStr: string // 年薪输入字符串，保存时转 number
+    currentLevel: string            // CareerLevel 枚举值
 }
 
 const genderOptions = ['男', '女']
 const cityOptions = ['北京', '上海', '广州', '深圳', '成都']
+const levelOptions = ['骨干员工（高级专员/资深架构师）', '团队主管（组长/技术Leader）', '中高层管理（经理/总监）', '决策层（VP/C-Level/合伙人）']
+const levelEnumMap: Record<string, string> = {
+    '骨干员工（高级专员/资深架构师）': 'IC',
+    '团队主管（组长/技术Leader）': 'LEAD',
+    '中高层管理（经理/总监）': 'MGR_DIR',
+    '决策层（VP/C-Level/合伙人）': 'VP_C',
+}
+const levelReverseMap: Record<string, string> = Object.fromEntries(
+    Object.entries(levelEnumMap).map(([k, v]) => [v, k])
+)
 
 const genderEnumMap: Record<string, string> = { '男': 'MALE', '女': 'FEMALE' }
 const genderReverseMap: Record<string, string> = { 'MALE': '男', 'FEMALE': '女' }
@@ -85,12 +113,17 @@ const form = ref<InformationForm>({
     phone: '13319197788',
     email: '',
     city: '北京',
+    currentAnnualSalaryStr: '',
+    currentLevel: '',
 })
 
 const showGenderPicker = ref(false)
 const showBirthMonthPicker = ref(false)
 const showWorkMonthPicker = ref(false)
 const showCityPicker = ref(false)
+const showLevelPicker = ref(false)
+
+const currentLevelText = computed(() => form.value.currentLevel ? levelReverseMap[form.value.currentLevel] || '' : '')
 
 const maxDate = new Date()
 const minDate = new Date('1960-01-01').getTime()
@@ -143,6 +176,11 @@ const handleCityConfirm = ({ value }: { value: string[] }): void => {
     form.value.city = value[0]
 }
 
+const handleLevelConfirm = ({ value }: { value: string[] }): void => {
+    form.value.currentLevel = levelEnumMap[value[0]] || ''
+    showLevelPicker.value = false
+}
+
 onMounted(async (): Promise<void> => {
     try {
         const res: any = await apiGetResumeProfile()
@@ -154,6 +192,8 @@ onMounted(async (): Promise<void> => {
         if (res.phone) form.value.phone = res.phone
         if (res.email) form.value.email = res.email
         if (res.city) form.value.city = res.city
+        if (res.currentAnnualSalary != null) form.value.currentAnnualSalaryStr = String(res.currentAnnualSalary)
+        if (res.currentLevel) form.value.currentLevel = res.currentLevel
     } catch {
         // 错误由 request.ts 统一处理
     }
@@ -188,6 +228,8 @@ const handleSave = async (): Promise<void> => {
             city: form.value.city,
             ...(form.value.email.trim() ? { email: form.value.email.trim() } : {}),
             ...(form.value.workMonth ? { workStartDate: new Date(form.value.workMonth).toISOString() } : {}),
+            ...(form.value.currentAnnualSalaryStr ? { currentAnnualSalary: Number(form.value.currentAnnualSalaryStr) } : {}),
+            ...(form.value.currentLevel ? { currentLevel: form.value.currentLevel } : {}),
         })
         uni.showToast({ title: '保存成功', icon: 'success' })
         setTimeout(() => {

@@ -21,8 +21,8 @@ export class JobsController {
 
   @Get()
   @ApiOperation({ summary: '职位列表（分页+筛选）' })
-  list(@Query() query: ListJobsQuery) {
-    return this.jobsService.list(query);
+  list(@Query() query: ListJobsQuery, @CurrentUser() user: JwtPayload) {
+    return this.jobsService.list(query, user?.sub);
   }
 
   @Get('my-deliveries')

@@ -181,6 +181,14 @@ export const apiConfirmWorkCert = (shareToken: string, data: {
 export const apiCancelWorkCert = (workExpId: string) =>
   request({ url: `/resume/work-exp/${workExpId}/cert`, method: 'DELETE' } as any);
 
+// 获取推荐认证人列表
+export const apiGetRecommendedCertifiers = (workExpId: string) =>
+  request({ url: `/resume/work-exp/${workExpId}/recommend-certifiers`, method: 'GET' } as any);
+
+// 发起认证请求（可选指定认证人）
+export const apiRequestWorkCertWithCertifier = (workExpId: string, certifierId?: string) =>
+  request({ url: `/resume/work-exp/${workExpId}/request-cert`, method: 'POST', data: certifierId ? { certifierId } : {} } as any);
+
 // ===== 远程视频（保留原有）=====
 export const postApiSelectByConditions = (data: any) =>
   request({ url: '/api3/video/participants/selectByConditions', method: 'POST', data } as any);

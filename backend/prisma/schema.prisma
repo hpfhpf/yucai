@@ -82,6 +82,15 @@ enum RecStatus {
   REVIEW
 }
 
+// 职级体系：骨干员工 / 团队主管 / 中高层管理 / 决策层
+// 数值顺序对应过滤逻辑（越高越资深），Prisma 枚举按声明顺序比较
+enum CareerLevel {
+  IC        // 骨干员工（高级专员/资深工程师）
+  LEAD      // 团队主管（组长/技术 Leader）
+  MGR_DIR   // 中高层管理（部门经理/总监）
+  VP_C      // 决策层（VP/C-Level/合伙人）
+}
+
 // ===========================
 // 用户表
 // ===========================
@@ -124,9 +133,11 @@ model SeekerProfile {
   gender    Gender    @default(UNKNOWN)
   birthDate DateTime? @map("birth_date")
   city      String?
-  roleTitle String?   @map("role_title")
-  selfDesc  String?   @db.Text @map("self_desc")
-  createdAt DateTime  @default(now()) @map("created_at")
+  roleTitle            String?      @map("role_title")
+  selfDesc             String?      @db.Text @map("self_desc")
+  currentAnnualSalary  Int?         @map("current_annual_salary") // 当前综合年薪，万/年
+  currentLevel         CareerLevel? @map("current_level")          // 当前职级
+  createdAt            DateTime     @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
   user        User                @relation(fields: [userId], references: [id])
@@ -275,8 +286,11 @@ model Job {
   city        String?
   district    String?
   address     String?
-  salaryRange String?   @map("salary_range")
-  minDegree   Degree    @default(ANY) @map("min_degree")
+  salaryRange    String?     @map("salary_range")
+  annualSalaryMin Int?       @map("annual_salary_min") // 年薪下限，万/年
+  annualSalaryMax Int?       @map("annual_salary_max") // 年薪上限，万/年
+  levelTag       CareerLevel? @map("level_tag")        // AI 异步打标的职级（可空）
+  minDegree      Degree      @default(ANY) @map("min_degree")
   minExpYears Int       @default(0) @map("min_exp_years")
   description String    @db.Text
   perks       Json?

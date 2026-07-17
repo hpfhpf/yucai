@@ -6,9 +6,233 @@
 
 ## 当前阶段
 
-**阶段**：第二阶段 — Bug 修复 + 文档归档完成  
-**最近更新**：2026-06-26  
-**下一步**：走完招聘端 golden path 验收（浏览器实际点击每个按钮）；推进第三阶段信用体系
+**阶段**：第三阶段 — PRD V3 AI 能力补充（进行中）  
+**最近更新**：2026-07-17  
+**下一步**：Module B/D 走完完整 golden path 验收；Module A/C（AI JD 细化 + 定制简历快照）由其他团队成员完成
+
+---
+
+## 已完成
+
+### 文档
+- [x] `docs/product-spec.md` — 产品说明书 v0.2（含运营端第7节、问题清单#1-#24）
+- [x] `docs/design.md` — 技术设计文档 v0.3（MySQL 8.0、认证粒度(user,company)、分享认证流程、开发顺序调整）
+- [x] `CLAUDE.md` — 项目开发指南（含多角色方法论）
+- [x] `docs/progress.md` — 进度追踪文件（本文件）
+- [x] `docs/test-cases.md` — 接口测试用例（Auth/Resume/Jobs，含 BUG 跟踪表）
+- [x] `docs/prd.md` — 产品需求文档 v1.0（全量产品逻辑归档，12个章节）
+- [x] `docs/recruiter-spec.md` — 招聘端功能模块与测试用例文档
+
+### 决策记录
+- **后端框架**：Node.js + NestJS + Prisma + MySQL 8.0（详见 design.md 第1.2节）
+- **平台范围**：全国（非仅成都）
+- **工作认证逻辑**：超级管理员初期认证 → 认证用户可为同公司他人认证（详见 design.md 第6节）
+
+---
+
+## 进行中
+
+### PRD V3 — Module A/C（AI 能力，其他团队成员负责）
+- [ ] Module A：招聘端 AI 多轮对话细化 JD（千问 API + 对话 UI + Diff 预览）
+- [ ] Module C：求职端 AI 定制简历 + 职位简历快照（STAR 润色 + ResumeSnapshot 表）
+
+---
+
+## 待完成（按优先级）
+
+### 第二阶段遗留
+- [ ] 求职者收到的邀请列表（消息中心）
+- [ ] 实时聊天（WebSocket）
+
+### 第三阶段：信用体系
+- [ ] 实名认证提交 + 运营端审核
+- [ ] 职业信用评分计算
+- [ ] 企业信用展示
+- [ ] 信用异议流程
+
+### 第四阶段：增长
+- [ ] 职位推荐算法
+- [ ] 视频面试（声网 Agora）
+- [ ] 运营端完整功能
+- [ ] 数据统计
+
+---
+
+## 历史已完成
+
+### 第一阶段：MVP 基础功能
+
+#### 后端初始化
+- [x] 创建 `backend/` 目录，初始化 NestJS 项目
+- [x] 配置 Prisma + MySQL 8.0（本地用 Homebrew MySQL 9.2）
+- [x] 创建 docker-compose.yml（MySQL + Redis，供生产/CI 使用）
+- [x] 配置 `.env.example`
+
+#### 数据库
+- [x] 编写 Prisma schema（14张表，含枚举）
+- [x] `prisma db push` 建表（本地开发用，migrate dev 需额外影子库权限）
+
+#### 认证模块（auth）
+- [x] Mock 登录（4个测试账号，每角色一个）
+- [x] JWT 签发与验证（JwtAuthGuard + CurrentUser 装饰器）
+- [ ] 真实手机号+密码注册/登录（TODO：替换 Mock）
+- [ ] 短信验证码（接腾讯云短信，TODO）
+
+#### 用户模块（users）
+- [x] GET /v1/users/me（从 DB 读取用户信息）
+- [x] PUT /v1/users/me（更新 nickname，含长度校验）
+- [x] POST /v1/users/me/avatar（stub，返回 501，待接入腾讯云 COS）
+- [ ] 修改手机号（待接入腾讯云短信）
+- [ ] 头像真实上传（待配置腾讯云 COS）
+
+#### 简历模块（resume）
+- [x] 求职者基础信息 GET/PUT
+- [x] 教育经历 CRUD
+- [x] 工作经历 CRUD（skillTags 用 MySQL JSON 列）
+- [x] 项目经历 CRUD（techTags 用 MySQL JSON 列）
+- [x] 自我描述 GET/PUT
+- [x] Mock 用户 seed（prisma/seed.ts）
+
+#### 职位模块（jobs）
+- [x] 职位列表（筛选/分页）
+- [x] 职位详情（含浏览量+1）
+- [x] 投递简历（含信用授权标记、防重投）
+- [x] 职位收藏/取消
+- [x] 我的投递记录
+- [x] 我的收藏列表
+- [x] 招聘官发布/编辑/下架职位（RECRUITER 角色鉴权）
+- [x] 招聘官已发布职位列表
+- [x] 测试数据 seed（2家公司、1个招聘官、5个职位）
+
+#### 前端对接
+- [x] `request.ts` — Bearer token 从 storage 读取，响应按 HTTP 状态码处理，401 自动跳转登录
+- [x] `api/index.ts` — 补全全部业务 API（auth/users/jobs/resume/companies/recruiter，共约 40 个函数）
+- [x] 登录页 — 接 `POST /v1/auth/login`，成功后写 token + userInfo 到 storage
+- [x] 求职者首页 — 职位列表接 `GET /v1/jobs`，快捷入口接筛选参数，换一批调真实接口
+- [x] 我的页面 — 从 storage 读取登录状态和用户名，未登录跳转登录页
+- [x] 简历中心（resumeCenter）— 接 resume 模块各接口
+- [x] 职位详情页 — 接 `GET /v1/jobs/:id`，投递/收藏按钮联通（路径 pages/recommendation/detail/index）
+- [x] 我的投递/收藏页 — 接 `GET /v1/jobs/my-deliveries` / `my-favorites`
+- [x] 消息中心 — 面试邀请 tab 接 `GET /v1/messages/invites`（新增 MessagesModule）
+- [x] 工作经历删除（前端删除按钮 + 确认弹窗，调 `DELETE /v1/resume/work-exp/:id`）
+- [x] 工作认证流程（`POST /v1/resume/work-exp/:id/request-cert` 生成 shareToken，`POST /v1/resume/certify/:shareToken` 同事确认，`GET /v1/resume/certifications` 列表；简历中心加认证按钮/状态徽章；workCertification.vue 接真实数据）
+
+### 第二阶段：招聘官 + 消息
+
+- [x] 企业搜索/创建（`/v1/companies`）
+- [x] 招聘官档案注册/获取/更新（`/v1/recruiter/profile`）
+- [x] 简历库浏览 + 查看完整简历（`/v1/recruiter/seekers`）
+- [x] 投递管理：查看 + 更新状态（VIEWED/INTERVIEW/REJECTED/ACCEPTED）
+- [x] 面试邀请发送 + 已发邀请列表（`/v1/recruiter/invite`）
+- [x] 招聘端前端完整对接：
+  - [x] `recruiter/registration.vue` 重构为 3步文本注册流程（联系人 → 企业搜索/创建 → 完成）
+  - [x] `recruiter/index.vue` 替换 mock → 真实 apiGetSeekers 数据，点击跳转 resumeDetail
+  - [x] `recruiter/talents.vue` 接 apiGetSeekers，搜索防抖，点击跳转 resumeDetail
+  - [x] `recruiter/resumeCenter.vue` 重构为投递管理列表（Tab 全部/待处理/已邀请/通过/不合适）+ 面试邀请 Modal
+  - [x] `recruiter/resumeDetail.vue` 新建简历详情页（接 apiGetSeekerResume，职位选择 + 面试邀请发送）
+  - [x] `pages.json` 注册 resumeDetail，修复 linter 引入的空 style 配置
+  - [x] `recruiter/myJobs.vue` 新建"我的职位"列表页（接 apiGetMyPostedJobs，含下线功能）
+  - [x] `recruiter/jobPosting.vue` 编辑模式（读 editId URL 参数，预填表单，调 apiUpdateJob）
+  - [x] `recruiter/resumeDetail.vue` 面试邀请修复（auto-select 第一个职位，移除阻断性校验）
+  - [x] `prisma/seed-seekers.ts` 新增 6 个测试求职者（13800000011~16，各含教育+工作经历）
+  - [x] `prisma/seed-deliveries.ts` 新增 8 条投递记录（不同状态，用于测试简历中心各 Tab）
+  - [x] `prisma/normalize-salary.ts` 薪资归一化脚本（177 条非标数据统一为 K 制选项）
+  - [x] `recruiter/resumeCenter.vue` 投递卡片增加状态徽章（颜色区分五种状态）
+  - [x] `recruiter/jobPosting.vue` 非标薪资动态注入 picker 顶部（历史数据兼容展示）
+  - [x] `seeker/index.vue` 顶部加招聘官角色检测，自动 reLaunch 到招聘官首页
+  - [x] `mine/index.vue` 未认证/已认证徽章改为互斥显示（v-if/v-else）
+  - [x] `mine/index.vue` "我的资料"按角色分流（招聘官 → registration，求职者 → changePhone）
+  - [x] `recruiter/registration.vue` 增加编辑模式（onMounted 预填数据，PUT 更新档案）
+
+### PRD V3 — Module B：首页精准过滤（2026-07-16 完成）
+
+- [x] **DB Schema**：新增 `CareerLevel` 枚举（IC/LEAD/MGR_DIR/VP_C）；`Job` 加 `annualSalaryMin`/`annualSalaryMax`/`levelTag`；`SeekerProfile` 加 `currentAnnualSalary`/`currentLevel`；`prisma db push` 同步
+- [x] **后端**：`UpdateProfileDto` 加年薪/职级字段；`JobsService.list()` 支持 `enableFilter=true` 时双重过滤（年薪下限 ≥ 当前年薪 + 职级 ≥ 当前职级，`levelTag` 为空的职位不参与职级过滤）；`CreateJobDto`/`UpdateJobDto` 加 `annualSalaryMin`/`annualSalaryMax`
+- [x] **前端（求职者）**：`Information.vue` 加「当前综合年薪（万/年）」输入框 + 「当前职级」4档选择器；首页职位卡片优先展示结构化年薪（`XX-XX万/年`），fallback 到旧 `salaryRange`
+- [x] **前端（招聘官）**：`jobPosting.vue` 加年薪上下限输入框，编辑模式预填，提交时携带
+- [x] **简历中心展示**（2026-07-17）：`resumeCenter/index.vue` profile 区域展示年薪/职级标签；未填写时显示「填写年薪/职级，开启精准匹配」引导入口
+- [x] **个人中心入口修复**（2026-07-17）：`mine/index.vue` 「我的资料」对求职者跳转 `Information.vue`（原来错误跳转到换手机号页）
+- [x] **测试数据**（2026-07-17）：`seed-filter-jobs.ts` 创建 11 个带 annualSalaryMin/levelTag 的测试职位（IC×2, LEAD×2, MGR_DIR×2, VP_C×2, 无标签×2）
+
+### PRD V3 — Module D：工作经历认证流升级（2026-07-16 完成）
+
+认证流最终方案：
+- **有推荐人时**：展示同公司已认证用户列表（不脱敏）→ 选定后绑定 certifierId → wx.shareAppMessage 发微信卡片
+- **无推荐人/跳过时**：直接 wx.shareAppMessage，certifierId 为空，任何同公司已认证用户均可确认
+- **认证人打开卡片**：若绑定了 certifierId，必须匹配当前登录人；超时 72h（原 7 天）
+
+- [x] **后端**：`GET /v1/resume/work-exp/:id/recommend-certifiers`（同公司 + 时间重叠 + 隐私熔断 + CareerLevel 降序）；`requestCertification` 支持可选 `certifierId` 预绑定，超时改 72h；`confirmCertification` 加绑定校验（certifierId 不为空时必须匹配）；错误文案更新为"认证链接已过期（72小时有效期）"
+- [x] **前端**：`workCertification.vue` 分享按钮改为先拉推荐人 → 弹窗选择（含「直接发给微信好友」按钮） → `doShare()` 统一执行；支持从简历中心带 `workExpId` 跳转后自动弹出推荐人弹窗；`api/index.ts` 新增 `apiGetRecommendedCertifiers`、`apiRequestWorkCertWithCertifier`
+- [x] **前端**：简历中心已认证工作经历徽章改为「🏅 联合认证」金标样式；`handleRequestCert`/`handleResendCert` 改为跳转到认证页（逻辑集中），移除旧 `showShareOptions`
+- [x] **微信分享修复**（2026-07-17）：`workCertification.vue` 改为 `onShareAppMessage` + `<button open-type="share">` 触发方案——API 成功后显示底部浮层，用户点绿色按钮触发真实小程序卡片分享（原 `wx.shareAppMessage()` 直调只生成认证码文本）
+- [x] **测试数据**（2026-07-17）：`seed-certifiers.ts` 为 mock-seeker-001 创建字节跳动已离职工作经历；创建认证人李强（LEAD）和周梅（MGR_DIR），含 APPROVED WorkCertification，API 验证返回正常
+- [x] **认证 UX 优化**（2026-07-17）：`workCertification.vue` 区分发起人/认证人视角文案；移除匿名/实名切换（冷启阶段固定实名）；shareTrigger 与分享卡片文案统一为「职业里程碑见证与经历联合认证」；certForm 日期预填为求职者在职时间段
+- [x] **测试数据**（2026-07-17）：`seed-tencent-certifiers.ts` 修复 seeker-001 腾讯工作经历（companyId + endDate），创建认证人王浩（LEAD）和陈静（MGR_DIR），API 验证返回正常
+- [x] **过滤逻辑修复**（2026-07-17）：`jobs.service.ts` filter 改为严格 AND 模式——移除 null-salary 兜底，salary 和 level 两个条件改为 `where.AND` 独立叠加，不再污染 keyword 的 `where.OR`
+
+---
+
+## 问题清单
+
+| 编号 | 优先级 | 说明 | 状态 |
+|------|--------|------|------|
+| #1 | P1 | BottomNav 招聘官端路径与求职者端相同，双端切换机制未实现 | 待前端处理 |
+| #2 | P0 | 登录完全是Mock，无真实API | 第一阶段修复 |
+| #3 | P1 | 求职者首页搜索、职位点击未跳转 | 第一阶段修复 |
+| #4 | P1 | 快捷入口全职/兼职职位点击未实现 | 第一阶段修复 |
+| #16 | P2 | pages.json 应用名仍为 "russ-uniapp" | 待前端处理 |
+| #17 | P2 | route.ts 中 goPageMeeting 指向不存在页面 | 待前端处理 |
+| #21 | P1 | selfDesc.vue 缺少 needLogin: true | 待前端处理 |
+| #22 | P1 | job.vue 工作经历表单缺少薪资和技能标签字段 | 需前端补充 |
+| #23 | P1 | project.vue 项目经历表单缺少技术标签字段 | 需前端补充 |
+
+---
+
+## 关键决策记录
+
+### 2026-07-16
+
+**PRD V3 功能模块分工**：
+- Module A（AI JD 细化）+ Module C（AI 定制简历快照）→ 其他团队成员（千问 API）
+- Module B（首页精准过滤）+ Module D（认证流升级）→ 本次已完成
+
+**向上跳槽过滤逻辑**：
+- 采用 `enableFilter=true` 开关，前端可控；求职者未填年薪/职级时不过滤
+- `levelTag` 为空（AI 未打标）的职位不参与职级过滤，保证展示密度
+- 职级过滤枚举顺序：IC(0) < LEAD(1) < MGR_DIR(2) < VP_C(3)
+
+**认证流升级最终方案**：
+- 推荐人列表冷启动阶段不脱敏（姓名、公司直接展示）
+- 推荐条件：同公司 + 任意时间重叠（不强制百分比）+ 已认证 + 隐私熔断（过滤现任公司）
+- 通知方式：选定认证人后发微信卡片（不发站内消息），与旧流程统一
+- shareToken 超时：统一改为 72h
+- 认证人有无绑定均可工作：绑定时必须匹配，未绑定时走原有同公司已认证校验
+
+### 2026-06-22
+
+**数据库切换为 MySQL 8.0**：
+- 招聘平台是典型关系型产品，MySQL 更符合行业惯例
+- 腾讯云 CDB for MySQL 成熟，运维成本低
+- MySQL 8.0 原生 JSON 类型可满足 skillTags/techTags 需求
+- `String[]` → `Json?`，Prisma 应用层负责序列化
+
+**工作认证粒度调整**：
+- 认证以 (userId, companyId) 为单位，同公司所有经历只认证一次
+- WorkCertification 表新增 `@@unique([userId, companyId])`
+- WorkExperience 移除 `isVerified`/`verifiedAt`，通过联查判断认证状态
+
+### 2026-06-18
+
+**后端框架选型**：选 NestJS + PostgreSQL + Prisma
+- 与 finance-agent-system 技术栈一致（Prisma + PostgreSQL）
+- NestJS 提供模块化结构，易于扩展和迁移
+- TypeScript 与前端保持一致，降低沟通成本
+
+**平台范围**：由"本地成都"扩展为"面向全国"
+
+**工作认证机制**：链式信任
+- 初期：超级管理员在运营端直接认证
+- 后期：已认证用户可为同公司他人认证
 
 ---
 
