@@ -4,14 +4,17 @@ import {
 import { PrismaService } from '../common/prisma/prisma.service';
 import { CreateJobDto, UpdateJobDto, ListJobsQuery, DeliverJobDto } from './dto/jobs.dto';
 
+// CareerLevel 枚举顺序（数值越大越高级，用于 >= 过滤）
+const CAREER_LEVEL_ORDER = { IC: 0, LEAD: 1, MGR_DIR: 2, VP_C: 3 };
+
 @Injectable()
 export class JobsService {
   constructor(private readonly prisma: PrismaService) {}
 
   // ===== 职位列表（求职者浏览）=====
 
-  async list(query: ListJobsQuery) {
-    const { page = 1, limit = 10, city, keyword, nature, companyId } = query;
+  async list(query: ListJobsQuery, userId?: string) {
+    const { page = 1, limit = 10, city, keyword, nature, companyId, enableFilter } = query;
     const skip = (page - 1) * limit;
 
     const where: any = { status: 'ACTIVE' };
@@ -23,6 +26,30 @@ export class JobsService {
         { title: { contains: keyword } },
         { description: { contains: keyword } },
       ];
+    }
+
+    // 向上跳槽过滤：仅当 enableFilter=true 且求职者已填写年薪/职级时生效
+    if (enableFilter && userId) {
+      const profile = await this.prisma.seekerProfile.findUnique({ where: { userId } });
+      const filterAnd: any[] = [];
+
+      if (profile?.currentAnnualSalary != null) {
+        // 严格过滤：必须有结构化年薪且下限 >= 求职者当前年薪；无年薪字段的旧数据不展示
+        filterAnd.push({ annualSalaryMin: { gte: profile.currentAnnualSalary } });
+      }
+
+      if (profile?.currentLevel != null) {
+        // 职级过滤：职位职级 >= 求职者当前职级；levelTag=null（AI 未打标）的职位仍展示
+        const minOrder = CAREER_LEVEL_ORDER[profile.currentLevel as keyof typeof CAREER_LEVEL_ORDER];
+        const eligibleLevels = Object.entries(CAREER_LEVEL_ORDER)
+          .filter(([, order]) => order >= minOrder)
+          .map(([level]) => level);
+        filterAnd.push({ OR: [{ levelTag: null }, { levelTag: { in: eligibleLevels } }] });
+      }
+
+      if (filterAnd.length) {
+        where.AND = [...(where.AND ?? []), ...filterAnd];
+      }
     }
 
     const [total, items] = await Promise.all([
@@ -38,12 +65,7 @@ export class JobsService {
       }),
     ]);
 
-    return {
-      total,
-      page,
-      limit,
-      items,
-    };
+    return { total, page, limit, items };
   }
 
   // ===== 职位详情 =====
@@ -86,6 +108,8 @@ export class JobsService {
         district: dto.district,
         address: dto.address,
         salaryRange: dto.salaryRange,
+        annualSalaryMin: dto.annualSalaryMin,
+        annualSalaryMax: dto.annualSalaryMax,
         minDegree: dto.minDegree as any ?? 'ANY',
         minExpYears: dto.minExpYears ?? 0,
         description: dto.description,
@@ -108,6 +132,8 @@ export class JobsService {
         district: dto.district,
         address: dto.address,
         salaryRange: dto.salaryRange,
+        annualSalaryMin: dto.annualSalaryMin,
+        annualSalaryMax: dto.annualSalaryMax,
         minDegree: dto.minDegree as any,
         minExpYears: dto.minExpYears,
         description: dto.description,

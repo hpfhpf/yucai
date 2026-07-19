@@ -55,6 +55,8 @@ export class ResumeService {
         birthDate: dto.birthDate ? new Date(dto.birthDate) : undefined,
         city: dto.city,
         roleTitle: dto.roleTitle,
+        currentAnnualSalary: dto.currentAnnualSalary,
+        currentLevel: dto.currentLevel as any,
       },
     });
   }
@@ -236,7 +238,7 @@ export class ResumeService {
 
   // ===== Work Certification =====
 
-  async requestCertification(userId: string, workExpId: string) {
+  async requestCertification(userId: string, workExpId: string, certifierId?: string) {
     const exp = await this.prisma.workExperience.findUnique({
       where: { id: workExpId },
       include: { certification: true },
@@ -248,13 +250,32 @@ export class ResumeService {
       return { id: exp.certification.id, status: 'APPROVED', company: exp.company, shareToken: null };
     }
 
+    // 若指定了认证人，预校验其在同公司有 APPROVED 记录
+    if (certifierId) {
+      if (certifierId === userId) throw new BadRequestException('不能选择自己作为认证人');
+      if (exp.companyId) {
+        const certifierApproved = await this.prisma.workCertification.findFirst({
+          where: { userId: certifierId, status: 'APPROVED', workExp: { companyId: exp.companyId } },
+        });
+        if (!certifierApproved) throw new BadRequestException('所选认证人在该公司无有效认证记录');
+      }
+    }
+
     const shareToken = randomBytes(24).toString('hex');
-    const shareExpireAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const shareExpireAt = new Date(Date.now() + 72 * 60 * 60 * 1000); // 72h
 
     const cert = await this.prisma.workCertification.upsert({
       where: { workExpId },
-      create: { userId, workExpId, certifierType: 'PEER', status: 'PENDING', shareToken, shareExpireAt },
-      update: { status: 'PENDING', shareToken, shareExpireAt },
+      create: {
+        userId, workExpId, certifierType: 'PEER', status: 'PENDING',
+        certifierId: certifierId ?? null,
+        shareToken, shareExpireAt,
+      },
+      update: {
+        status: 'PENDING',
+        certifierId: certifierId ?? null,
+        shareToken, shareExpireAt,
+      },
     });
     return { id: cert.id, status: cert.status, company: exp.company, shareToken: cert.shareToken, shareExpireAt: cert.shareExpireAt };
   }
@@ -286,8 +307,13 @@ export class ResumeService {
     });
     if (!cert) throw new NotFoundException('认证链接不存在或已失效');
     if (cert.status === 'APPROVED') throw new BadRequestException('该工作经历已认证');
-    if (cert.shareExpireAt && cert.shareExpireAt < new Date()) throw new BadRequestException('认证链接已过期');
+    if (cert.shareExpireAt && cert.shareExpireAt < new Date()) throw new BadRequestException('认证链接已过期（72小时有效期）');
     if (cert.userId === certifierId) throw new BadRequestException('不能认证自己的工作经历');
+
+    // 若认证链接已绑定指定认证人，当前登录人必须匹配
+    if (cert.certifierId && cert.certifierId !== certifierId) {
+      throw new ForbiddenException('此认证链接非发给您的，无法操作');
+    }
 
     if (certifierRole !== 'SUPER_ADMIN') {
       const targetExp = cert.workExp;
@@ -326,16 +352,18 @@ export class ResumeService {
 
   async getCertificationsGiven(userId: string) {
     const certs = await this.prisma.workCertification.findMany({
-      where: { certifierId: userId, status: 'APPROVED' },
+      where: { certifierId: userId, status: { in: ['PENDING', 'APPROVED'] } },
       include: {
         workExp: { select: { company: true, title: true, startDate: true, endDate: true } },
-        user: { select: { seekerProfile: { select: { realName: true } } }, },
+        user: { select: { seekerProfile: { select: { realName: true } } } },
       },
       orderBy: { updatedAt: 'desc' },
     });
     return certs.map((c) => ({
       id: c.id,
-      certifiedAt: c.updatedAt,
+      status: c.status,
+      shareToken: c.shareToken,
+      certifiedAt: c.status === 'APPROVED' ? c.updatedAt : null,
       certifieeRealName: c.user.seekerProfile?.realName || null,
       anonymous: c.anonymous,
       company: c.workExp.company,
@@ -343,6 +371,7 @@ export class ResumeService {
       workStartDate: c.workExp.startDate,
       workEndDate: c.workExp.endDate,
       relationship: c.relationship,
+      recommendation: c.recommendation,
     }));
   }
 
@@ -359,7 +388,15 @@ export class ResumeService {
   async getCertifications(userId: string) {
     const certs = await this.prisma.workCertification.findMany({
       where: { userId },
-      include: { workExp: { select: { company: true, title: true, companyId: true } } },
+      include: {
+        workExp: { select: { company: true, title: true, companyId: true } },
+        certifier: {
+          select: {
+            nickname: true,
+            seekerProfile: { select: { realName: true, roleTitle: true } },
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
     return certs.map((c) => ({
@@ -372,6 +409,110 @@ export class ResumeService {
       shareToken: c.shareToken,
       shareExpireAt: c.shareExpireAt,
       createdAt: c.createdAt,
+      // 仅 APPROVED 时有意义
+      certifierName: c.certifier?.seekerProfile?.realName ?? c.certifier?.nickname ?? null,
+      certifierRole: c.certifier?.seekerProfile?.roleTitle ?? null,
+      relationship: c.relationship,
+      recommendation: c.recommendation,
+      knowFrom: c.knowFrom,
+      knowTo: c.knowTo,
+      certifiedAt: c.status === 'APPROVED' ? c.updatedAt : null,
+    }));
+  }
+
+  // ===== 推荐认证人 =====
+
+  // CareerLevel 排序权重（越大越优先）
+  private readonly LEVEL_ORDER: Record<string, number> = { VP_C: 3, MGR_DIR: 2, LEAD: 1, IC: 0 };
+
+  async getRecommendedCertifiers(userId: string, workExpId: string) {
+    // 1. 获取目标工作经历
+    const exp = await this.prisma.workExperience.findUnique({
+      where: { id: workExpId },
+      include: { profile: true },
+    });
+    if (!exp) throw new NotFoundException('工作经历不存在');
+    await this.ownProfile(exp.profileId, userId);
+
+    if (!exp.companyId) return []; // 未关联注册公司，无法推荐
+
+    // 2. 隐私熔断：找出求职者的「当前在职」公司（endDate 为空）
+    const seekerWorkExps = await this.prisma.workExperience.findMany({
+      where: { profileId: exp.profileId, endDate: null, companyId: { not: null } },
+      select: { companyId: true },
+    });
+    const currentCompanyIds = new Set(seekerWorkExps.map((e) => e.companyId as string));
+
+    // 3. 查找同公司有 APPROVED 认证的其他用户，且在职时间有重叠
+    const now = new Date();
+    const expStart = exp.startDate ?? new Date(0);
+    const expEnd = exp.endDate ?? now;
+
+    const certifications = await this.prisma.workCertification.findMany({
+      where: {
+        status: 'APPROVED',
+        userId: { not: userId },
+        workExp: {
+          companyId: exp.companyId,
+          // 时间重叠：候选人 startDate <= exp 结束 AND (候选人 endDate >= exp 开始 OR 候选人仍在职)
+          startDate: { lte: expEnd },
+          OR: [
+            { endDate: { gte: expStart } },
+            { endDate: null },
+          ],
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nickname: true,
+            avatarUrl: true,
+            seekerProfile: {
+              select: { realName: true, roleTitle: true, currentLevel: true },
+            },
+          },
+        },
+        workExp: {
+          select: { company: true, title: true, startDate: true, endDate: true, companyId: true },
+        },
+      },
+    });
+
+    // 4. 应用隐私熔断，同时过滤掉认证人自己在现任公司注册的记录（避免暴露）
+    const filtered = certifications.filter((cert) => {
+      const certCompanyId = cert.workExp.companyId;
+      if (certCompanyId && currentCompanyIds.has(certCompanyId)) return false;
+      return true;
+    });
+
+    // 5. 按 userId 去重（同一人可能在同公司有多条认证）
+    const seen = new Set<string>();
+    const unique = filtered.filter((cert) => {
+      if (seen.has(cert.userId)) return false;
+      seen.add(cert.userId);
+      return true;
+    });
+
+    // 6. 按 CareerLevel 降序排列，未填职级排末位
+    unique.sort((a, b) => {
+      const la = this.LEVEL_ORDER[a.user.seekerProfile?.currentLevel ?? ''] ?? -1;
+      const lb = this.LEVEL_ORDER[b.user.seekerProfile?.currentLevel ?? ''] ?? -1;
+      return lb - la;
+    });
+
+    // 7. 格式化返回（不脱敏）
+    return unique.map((cert) => ({
+      userId: cert.userId,
+      nickname: cert.user.nickname,
+      realName: cert.user.seekerProfile?.realName ?? null,
+      avatarUrl: cert.user.avatarUrl ?? null,
+      roleTitle: cert.user.seekerProfile?.roleTitle ?? null,
+      currentLevel: cert.user.seekerProfile?.currentLevel ?? null,
+      company: cert.workExp.company,
+      workTitle: cert.workExp.title,
+      workStartDate: cert.workExp.startDate,
+      workEndDate: cert.workExp.endDate,
     }));
   }
 }

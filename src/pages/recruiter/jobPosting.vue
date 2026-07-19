@@ -75,6 +75,17 @@
                     </view>
                     <view class="divider" />
 
+                    <view class="formRow">
+                        <view class="formRow__label">综合年薪</view>
+                        <view class="formRow__field formRow__field--inline">
+                            <wd-input v-model="form.annualSalaryMinStr" type="number" compact custom-class="formInput formInput--narrow" placeholder="下限" />
+                            <text class="formRow__sep">-</text>
+                            <wd-input v-model="form.annualSalaryMaxStr" type="number" compact custom-class="formInput formInput--narrow" placeholder="上限" />
+                            <text class="formRow__unit">万/年</text>
+                        </view>
+                    </view>
+                    <view class="divider" />
+
                     <view class="formRow formRow--tap" hover-class="formRow--pressed" @click="openSheet('education')">
                         <view class="formRow__label">最低学历</view>
                         <view class="formRow__field">
@@ -201,6 +212,8 @@ const form = ref({
     district: '',
     addressDetail: '',
     salary: '',
+    annualSalaryMinStr: '', // 年薪下限，万/年
+    annualSalaryMaxStr: '', // 年薪上限，万/年
     education: '',
     experience: '',
     description: '',
@@ -398,6 +411,8 @@ onMounted(async () => {
         form.value.district = job.district || ''
         form.value.addressDetail = job.address || ''
         form.value.salary = job.salaryRange || ''
+        form.value.annualSalaryMinStr = job.annualSalaryMin != null ? String(job.annualSalaryMin) : ''
+        form.value.annualSalaryMaxStr = job.annualSalaryMax != null ? String(job.annualSalaryMax) : ''
         form.value.education = educationReverseMap[job.minDegree] || ''
         form.value.experience = experienceReverseMap[job.minExpYears] || '不限'
         form.value.description = job.description || ''
@@ -422,6 +437,8 @@ const handlePublish = async () => {
             district: form.value.district,
             address: form.value.addressDetail.trim() || undefined,
             salaryRange: form.value.salary,
+            annualSalaryMin: form.value.annualSalaryMinStr ? Number(form.value.annualSalaryMinStr) : undefined,
+            annualSalaryMax: form.value.annualSalaryMaxStr ? Number(form.value.annualSalaryMaxStr) : undefined,
             minDegree: educationEnumMap[form.value.education],
             minExpYears: experienceYearsMap[form.value.experience] ?? 0,
             description: form.value.description.trim(),
@@ -507,6 +524,28 @@ const handlePublish = async () => {
     display: flex;
     align-items: center;
     justify-content: flex-start;
+}
+
+.formRow__field--inline {
+    gap: 10rpx;
+}
+
+.formRow__sep {
+    color: var(--app-text-secondary);
+    font-size: 28rpx;
+    flex-shrink: 0;
+}
+
+.formRow__unit {
+    color: var(--app-text-secondary);
+    font-size: 24rpx;
+    flex-shrink: 0;
+    margin-left: 4rpx;
+}
+
+:deep(.formInput--narrow) {
+    width: 120rpx !important;
+    flex: none !important;
 }
 
 :deep(.formInput) {

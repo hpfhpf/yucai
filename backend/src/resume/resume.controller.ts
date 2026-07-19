@@ -2,6 +2,7 @@ import {
   Body, Controller, Delete, Get, Param, Post, Put, UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { JwtPayload } from '../common/types/jwt-payload';
@@ -13,6 +14,10 @@ import {
   CreateProjectExpDto, UpdateProjectExpDto,
   ConfirmCertDto,
 } from './dto/resume.dto';
+
+class RequestCertDto {
+  @IsOptional() @IsString() certifierId?: string; // 指定认证人（从推荐列表选定）
+}
 
 @ApiTags('resume')
 @ApiBearerAuth()
@@ -129,10 +134,20 @@ export class ResumeController {
 
   // ===== Certification =====
 
+  @Get('work-exp/:id/recommend-certifiers')
+  @ApiOperation({ summary: '推荐认证人列表（同公司已认证用户，含隐私熔断）' })
+  getRecommendedCertifiers(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+    return this.resumeService.getRecommendedCertifiers(user.sub, id);
+  }
+
   @Post('work-exp/:id/request-cert')
-  @ApiOperation({ summary: '申请工作认证（生成 shareToken）' })
-  requestCertification(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
-    return this.resumeService.requestCertification(user.sub, id);
+  @ApiOperation({ summary: '申请工作认证（生成 shareToken，可选绑定指定认证人）' })
+  requestCertification(
+    @CurrentUser() user: JwtPayload,
+    @Param('id') id: string,
+    @Body() dto: RequestCertDto,
+  ) {
+    return this.resumeService.requestCertification(user.sub, id, dto.certifierId);
   }
 
   @Delete('work-exp/:id/cert')

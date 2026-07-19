@@ -13,6 +13,13 @@
                             </view>
                         </view>
                         <view class="profile__role">{{ user.role }}</view>
+                        <!-- 年薪 / 职级标签（已填写时显示，入口提示填写） -->
+                        <view class="profile__tagRow">
+                            <view v-if="userLevelText" class="profile__tag profile__tag--level">{{ userLevelText }}</view>
+                            <view v-if="user.annualSalary" class="profile__tag profile__tag--salary">{{ user.annualSalary }}万/年</view>
+                            <view v-if="!userLevelText && !user.annualSalary" class="profile__tag profile__tag--hint"
+                                @click="handleEdit('name')">填写年薪/职级，开启精准匹配 ›</view>
+                        </view>
                         <view class="profile__phoneRow">
                             <view class="profile__phoneIcon" />
                             <view class="profile__phone">{{ user.phone }}</view>
@@ -106,9 +113,9 @@
                                             <view class="step-btn step-btn--cancel"
                                                 @click.stop="handleCancelCert(item.id)">取消认证</view>
                                         </template>
-                                        <!-- 已认证：显示徽章，保留编辑 -->
+                                        <!-- 已认证：显示金标徽章，保留编辑 -->
                                         <template v-else-if="item.certStatus === 'APPROVED'">
-                                            <view class="step-badge step-badge--approved">已认证</view>
+                                            <view class="step-badge step-badge--gold">🏅 联合认证</view>
                                             <view class="step-btn step-btn--edit"
                                                 @click.stop="handleEditWork(item.id)">编辑</view>
                                         </template>
@@ -178,10 +185,15 @@ import BottomNav from '@/components/BottomNav.vue'
 import FaIcon from '@/components/FaIcon/index.vue'
 import { parseAvatar } from '@/utils/avatar'
 import { goPageAddProject, goPageAddJob, goPageAddEducation, goPageAddInformation, goPageAddSelfDesc } from '@/utils/route'
-import { apiGetResumeProfile, apiGetSelfDesc, apiGetEducations, apiGetWorkExps, apiGetProjectExps, apiGetUserMe, apiDeleteWorkExp, apiDeleteProjectExp, apiGetCertifications, apiRequestWorkCert, apiCancelWorkCert } from '@/api/index'
+import { apiGetResumeProfile, apiGetSelfDesc, apiGetEducations, apiGetWorkExps, apiGetProjectExps, apiGetUserMe, apiDeleteWorkExp, apiDeleteProjectExp, apiGetCertifications, apiCancelWorkCert } from '@/api/index'
 
-const user = ref({ name: '', role: '', phone: '' })
+const user = ref({ name: '', role: '', phone: '', annualSalary: null as number | null, level: '' })
 const selfDesc = ref('')
+
+const LEVEL_LABELS: Record<string, string> = {
+    IC: '骨干员工', LEAD: '团队主管', MGR_DIR: '中高层管理', VP_C: '决策层',
+}
+const userLevelText = computed(() => user.value.level ? LEVEL_LABELS[user.value.level] || '' : '')
 
 // 头像状态：与「我的」页共用 avatarUrl 存储格式
 const avatarUrl = ref('')
@@ -222,6 +234,8 @@ const loadResumeData = async () => {
             name: (profileRes as any).realName || (meRes as any).nickname || '未填写',
             role: (profileRes as any).roleTitle || '求职者',
             phone: (meRes as any).phone || '',
+            annualSalary: (profileRes as any).currentAnnualSalary ?? null,
+            level: (profileRes as any).currentLevel || '',
         }
         avatarUrl.value = (meRes as any).avatarUrl || ''
         selfDesc.value = (descRes as any).selfDesc || ''
@@ -333,49 +347,14 @@ const handleEditProject = (id: string) => {
     uni.navigateTo({ url: `/pages/seeker/resumeCenter/project?id=${id}` as any })
 }
 
-const showShareOptions = (shareToken: string, company: string) => {
-    const certPath = `/pages/seeker/resumeCenter/workCertification?shareToken=${shareToken}`
-    uni.showActionSheet({
-        itemList: ['微信分享', '复制认证码'],
-        success: ({ tapIndex }) => {
-            if (tapIndex === 0) {
-                if (typeof wx !== 'undefined' && (wx as any).shareAppMessage) {
-                    ;(wx as any).shareAppMessage({
-                        title: `请帮我认证在${company}的工作经历`,
-                        path: certPath,
-                    })
-                } else {
-                    uni.showToast({ title: '当前环境不支持微信分享', icon: 'none' })
-                }
-            } else {
-                uni.setClipboardData({
-                    data: shareToken,
-                    success: () => uni.showToast({ title: '认证码已复制，发给已认证的同事', icon: 'success', duration: 2000 }),
-                })
-            }
-        },
-    })
+// 申请认证：跳转到认证页（内含推荐人弹窗和微信分享流程）
+const handleRequestCert = (item: WorkStep) => {
+    uni.navigateTo({ url: `/pages/seeker/resumeCenter/workCertification?workExpId=${item.id}` as any })
 }
 
-const handleRequestCert = async (item: WorkStep) => {
-    try {
-        const res: any = await apiRequestWorkCert(item.id)
-        const idx = workSteps.value.findIndex(w => w.id === item.id)
-        if (res.status === 'APPROVED') {
-            if (idx !== -1) workSteps.value[idx].certStatus = 'APPROVED'
-            uni.showToast({ title: '工作经历已认证', icon: 'success' })
-        } else {
-            if (idx !== -1) workSteps.value[idx].certStatus = 'PENDING'
-            showShareOptions(res.shareToken, item.company)
-        }
-    } catch { }
-}
-
-const handleResendCert = async (item: WorkStep) => {
-    try {
-        const res: any = await apiRequestWorkCert(item.id)
-        if (res.shareToken) showShareOptions(res.shareToken, item.company)
-    } catch { }
+// 重新发送：同申请入口，认证页内会重新拉取推荐人
+const handleResendCert = (item: WorkStep) => {
+    uni.navigateTo({ url: `/pages/seeker/resumeCenter/workCertification?workExpId=${item.id}&resend=1` as any })
 }
 
 const handleCancelCert = (id: string) => {
@@ -443,6 +422,40 @@ const handleCancelCert = (id: string) => {
     margin-top: 8rpx;
     font-size: 28rpx;
     color: rgba(0, 0, 0, 0.5);
+}
+
+.profile__tagRow {
+    margin-top: 10rpx;
+    display: flex;
+    align-items: center;
+    gap: 10rpx;
+    flex-wrap: wrap;
+}
+
+.profile__tag {
+    padding: 4rpx 16rpx;
+    border-radius: 999rpx;
+    font-size: 22rpx;
+    font-weight: 600;
+}
+
+.profile__tag--level {
+    color: #1e5bff;
+    background: rgba(30, 91, 255, 0.08);
+    border: 1px solid rgba(30, 91, 255, 0.16);
+}
+
+.profile__tag--salary {
+    color: #d97706;
+    background: rgba(217, 119, 6, 0.08);
+    border: 1px solid rgba(217, 119, 6, 0.18);
+}
+
+.profile__tag--hint {
+    color: rgba(0, 0, 0, 0.36);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px dashed rgba(0, 0, 0, 0.14);
+    font-weight: 400;
 }
 
 .profile__phoneRow {
@@ -854,6 +867,13 @@ const handleCancelCert = (id: string) => {
 .step-badge--approved {
     color: #22c55e;
     background: rgba(34, 197, 94, 0.10);
+}
+
+.step-badge--gold {
+    color: #b45309;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.18), rgba(245, 158, 11, 0.12));
+    border: 1px solid rgba(245, 158, 11, 0.30);
+    font-weight: 700;
 }
 
 .step-badge--pending {

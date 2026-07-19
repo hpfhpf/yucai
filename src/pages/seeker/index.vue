@@ -96,7 +96,7 @@
                         @click="handleJobTap(job.id)">
                         <view class="jobCard__top">
                             <view class="jobCard__name">{{ job.title }}</view>
-                            <view class="jobCard__salary">{{ job.salaryRange || '薪资面议' }}</view>
+                            <view class="jobCard__salary">{{ formatSalary(job) }}</view>
                         </view>
                         <view class="jobCard__tags">
                             <wd-tag size="small">{{ job.city || '地点不限' }}</wd-tag>
@@ -186,7 +186,17 @@ const quickItems = ref<{ key: QuickKey; label: string }[]>([
     { key: 'credit', label: '企业信用' },
 ])
 
-type Job = { id: string; title: string; salaryRange: string; city: string; minDegree: string; company: { name: string }; createdAt: string }
+type Job = { id: string; title: string; salaryRange: string; annualSalaryMin: number | null; annualSalaryMax: number | null; city: string; minDegree: string; company: { name: string }; createdAt: string }
+
+// 优先展示结构化年薪，fallback 到旧的 salaryRange 字符串
+const formatSalary = (job: Job): string => {
+    if (job.annualSalaryMin != null && job.annualSalaryMax != null) {
+        return `${job.annualSalaryMin}-${job.annualSalaryMax}万/年`
+    }
+    if (job.annualSalaryMin != null) return `${job.annualSalaryMin}万+/年`
+    return job.salaryRange || '薪资面议'
+}
+
 const jobs = ref<Job[]>([])
 const loading = ref(false)
 const activeNature = ref<string | null>(null)
@@ -208,7 +218,7 @@ const fetchJobs = async (params?: { keyword?: string; nature?: string; page?: nu
 
     loading.value = true
     try {
-        const res: any = await apiGetJobs(reqParams)
+        const res: any = await apiGetJobs({ ...reqParams, enableFilter: true })
         searchCache.set(key, { time: Date.now(), data: res })
         applyResult(res, page)
     } catch {
