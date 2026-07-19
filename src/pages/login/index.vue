@@ -5,7 +5,7 @@
             <view class="title">登录</view>
             <wd-input v-model="phone" custom-class="globInput margin-16-a" type="number" :maxlength="11"
                 placeholder="请输入手机号" />
-            <wd-input v-model="password" custom-class="globInput margin-16-a" type="password" show-password
+            <wd-input v-model="password" custom-class="globInput margin-16-a" show-password
                 placeholder="请输入密码" />
             <button class="btn" @click="handleLogin">立即登录</button>
         </view>

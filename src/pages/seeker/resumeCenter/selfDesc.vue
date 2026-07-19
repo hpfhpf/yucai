@@ -36,6 +36,19 @@ const form = ref<SelfDescForm>({
 })
 
 const saving = ref(false)
+const loading = ref(false)
+
+onMounted(async () => {
+    loading.value = true
+    try {
+        const res = await apiGetSelfDesc()
+        form.value.content = (res as any)?.selfDesc ?? ''
+    } catch {
+        // 错误由 request.ts 统一处理，此处静默失败，保持空白让用户重新输入
+    } finally {
+        loading.value = false
+    }
+})
 
 const handleSave = async (): Promise<void> => {
     if (!form.value.content.trim()) {

@@ -245,7 +245,10 @@
     {
       "path": "pages/recruiter/myJobs",
       "type": "page",
-      "style": {}
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": ""
+      }
     },
     {
       "path": "pages/recruiter/newsDetail",
@@ -285,7 +288,10 @@
     {
       "path": "pages/recruiter/resumeDetail",
       "type": "page",
-      "style": {}
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": ""
+      }
     },
     {
       "path": "pages/recruiter/talents",
@@ -389,7 +395,10 @@
     {
       "path": "pages/seeker/resumeCenter/selfDesc",
       "type": "page",
-      "style": {}
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": ""
+      }
     },
     {
       "path": "pages/seeker/resumeCenter/workCertification",
