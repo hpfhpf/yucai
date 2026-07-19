@@ -53,6 +53,8 @@ export class ResumeService {
         realName: dto.realName,
         gender: dto.gender as any,
         birthDate: dto.birthDate ? new Date(dto.birthDate) : undefined,
+        email: dto.email,
+        workStartDate: dto.workStartDate ? new Date(dto.workStartDate) : undefined,
         city: dto.city,
         roleTitle: dto.roleTitle,
         currentAnnualSalary: dto.currentAnnualSalary,

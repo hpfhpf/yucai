@@ -1,6 +1,6 @@
 <template>
     <view class="page">
-        <HeaderNav title="添加教育经历" type="show-back" theme="000" />
+        <HeaderNav :title="pageTitle" type="show-back" theme="000" />
 
         <scroll-view class="scroll" scroll-y>
             <view class="content">
@@ -46,9 +46,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import HeaderNav from '@/components/HeaderNav.vue'
-import { apiCreateEducation } from '@/api/index'
+import { apiCreateEducation, apiUpdateEducation, apiGetEducations } from '@/api/index'
 
 interface EducationForm {
     school: string
@@ -70,12 +70,45 @@ const degreeEnumMap: Record<string, string> = {
     '初中及以下': 'JUNIOR_HIGH',
 }
 
+// 枚举 -> 中文标签，用于编辑回填（HIGH_SCHOOL 归一显示为「高中」）
+const degreeLabelMap: Record<string, string> = {
+    DOCTOR: '博士',
+    MASTER: '硕士',
+    BACHELOR: '本科',
+    ASSOCIATE: '大专',
+    HIGH_SCHOOL: '高中',
+    JUNIOR_HIGH: '初中及以下',
+}
+
+const editId = ref('')
+const isEdit = computed(() => !!editId.value)
+const pageTitle = computed(() => isEdit.value ? '编辑教育经历' : '添加教育经历')
+
 const form = ref<EducationForm>({
     school: '',
     degree: '',
     major: '',
     startMonth: '',
     endMonth: '',
+})
+
+onMounted(async () => {
+    const pages = (typeof getCurrentPages === 'function' && getCurrentPages()) || []
+    const page = pages[pages.length - 1] as any
+    const id = page?.options?.id || ''
+    if (!id) return
+    editId.value = id
+    try {
+        const list: any = await apiGetEducations()
+        const item = (list as any[]).find((e: any) => e.id === id)
+        if (item) {
+            form.value.school = item.school || ''
+            form.value.major = item.major || ''
+            form.value.degree = degreeLabelMap[item.degree] || ''
+            form.value.startMonth = item.startDate ? new Date(item.startDate) : ''
+            form.value.endMonth = item.endDate ? new Date(item.endDate) : ''
+        }
+    } catch { }
 })
 
 const showDegreePicker = ref(false)
@@ -151,13 +184,18 @@ const handleSave = async (): Promise<void> => {
 
     saving.value = true
     try {
-        await apiCreateEducation({
+        const payload = {
             school: form.value.school.trim(),
             major: form.value.major.trim() || undefined,
             degree: degreeEnumMap[form.value.degree],
             startDate: form.value.startMonth ? new Date(form.value.startMonth).toISOString() : undefined,
             endDate: form.value.endMonth ? new Date(form.value.endMonth).toISOString() : undefined,
-        })
+        }
+        if (isEdit.value) {
+            await apiUpdateEducation(editId.value, payload)
+        } else {
+            await apiCreateEducation(payload)
+        }
         uni.showToast({ title: '保存成功', icon: 'success' })
         setTimeout(() => uni.navigateBack(), 1200)
     } catch {

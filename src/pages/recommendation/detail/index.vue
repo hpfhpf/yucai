@@ -177,6 +177,8 @@
             </view>
         </wd-popup>
 
+        <DiagnosisPopup ref="diagRef" :job-id="jobId" @direct="handleDiagDirect" @tailor="handleDiagTailor" />
+
         <wd-toast selector="detailToast" />
     </view>
 </template>
@@ -185,8 +187,9 @@
 import { onMounted, ref } from 'vue'
 import { useToast } from '@wot-ui/ui/components/wd-toast'
 import HeaderNav from '@/components/HeaderNav.vue'
+import DiagnosisPopup from '@/components/DiagnosisPopup/index.vue'
 import { goPageCompanyDetail, goPageChatRoom } from '@/utils/route'
-import { apiGetJobDetail, apiDeliverJob, apiFavoriteJob, apiUnfavoriteJob, apiGetJobs } from '@/api/index'
+import { apiGetJobDetail, apiDeliverJob, apiFavoriteJob, apiUnfavoriteJob, apiGetJobs, apiGetResumeProfile } from '@/api/index'
 
 const toast = useToast('detailToast')
 
@@ -313,6 +316,7 @@ const toggleCollect = async () => {
 const handleReport = () => toast.info('投诉')
 const handleChat = () => goPageChatRoom()
 
+const diagRef = ref<InstanceType<typeof DiagnosisPopup> | null>(null)
 const deliverShown = ref(false)
 const deliverAgree = ref(false)
 const deliverError = ref('')
@@ -367,8 +371,38 @@ const confirmDeliver = async () => {
     }
 }
 
-const handleDeliver = () => {
+const handleDeliver = async () => {
+    // 投递前校验：未填写简历则引导去简历中心
+    try {
+        const profile: any = await apiGetResumeProfile()
+        if (!profile || !profile.realName) {
+            toast.info('请先完善简历')
+            setTimeout(() => {
+                uni.navigateTo({ url: '/pages/seeker/resumeCenter/index' as any })
+            }, 800)
+            return
+        }
+    } catch {
+        // 拉取简历失败（如未登录/无资料）同样引导去填写
+        toast.info('请先完善简历')
+        setTimeout(() => {
+            uni.navigateTo({ url: '/pages/seeker/resumeCenter/index' as any })
+        }, 800)
+        return
+    }
+    // 已有简历：启动 AI 诊断浮层
+    diagRef.value?.open()
+}
+
+// 诊断浮层「直接投递」：走原有确认承诺书流程
+const handleDiagDirect = () => {
     openDeliver()
+}
+
+// 诊断浮层「定向修改简历」：跳转定制页
+const handleDiagTailor = (diagnosisId?: string) => {
+    const q = diagnosisId ? `&diagnosisId=${diagnosisId}` : ''
+    uni.navigateTo({ url: `/pages/seeker/tailorResume/index?jobId=${jobId.value}${q}` as any })
 }
 
 const handleEditJob = () => {
@@ -439,7 +473,7 @@ const handleEditJob = () => {
 }
 
 .hero__salary {
-    font-size: 38rpx;
+    font-size: 30rpx;
     font-weight: 900;
     color: var(--app-text-muted);
     flex: 0 0 auto;

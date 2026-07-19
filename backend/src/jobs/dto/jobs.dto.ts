@@ -53,6 +53,20 @@ export class ListJobsQuery {
   @IsOptional() @Transform(({ value }) => value === 'true' || value === true) enableFilter?: boolean;
 }
 
+export enum DeliveryTypeDto { NORMAL = 'NORMAL', TARGETED = 'TARGETED' }
+
 export class DeliverJobDto {
   @IsBoolean() creditAuthorized: boolean;
+  @IsOptional() @IsEnum(DeliveryTypeDto) type?: DeliveryTypeDto;
+  @IsOptional() @IsString() tailoredResumeId?: string;
+}
+
+// 定制简历：基于诊断生成
+export class TailorResumeDto {
+  @IsOptional() @IsString() diagnosisId?: string;
+}
+
+// 定制简历：保存用户编辑后的内容
+export class SaveTailoredResumeDto {
+  @IsOptional() content?: Record<string, any>;
 }

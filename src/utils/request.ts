@@ -5,7 +5,8 @@ const Notify = useNotify();
 
 // 请求拦截
 const requestInterceptor = (options: requestOptions) => {
-  options.timeout = Number(__VITE_SERVER_TIMEOUT__) || 10000;
+  // 允许调用方通过 options.timeout 覆盖全局默认；AI 类慢接口需要更长超时。
+  options.timeout = options.timeout || Number(__VITE_SERVER_TIMEOUT__) || 10000;
   options.url = __VITE_SERVER_BASEURL__ + options.url;
   // 剔除 data 中值为 undefined/null 的字段：GET 请求下 uni.request 会把
   // 这类字段序列化成 role=undefined 等字面量传给后端，导致 400/500。

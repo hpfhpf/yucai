@@ -26,8 +26,21 @@ export const apiGetJobs = (params?: {
 export const apiGetJobDetail = (id: string) =>
   request({ url: `/jobs/${id}`, method: 'GET' } as any);
 
-export const apiDeliverJob = (id: string, data: { creditAuthorized: boolean }) =>
-  request({ url: `/jobs/${id}/deliver`, method: 'POST', data } as any);
+export const apiDeliverJob = (
+  id: string,
+  data: { creditAuthorized: boolean; type?: 'NORMAL' | 'TARGETED'; tailoredResumeId?: string },
+) => request({ url: `/jobs/${id}/deliver`, method: 'POST', data } as any);
+
+// AI 生成定制简历草稿（后端 AI 生成较慢，单独放宽超时至 60s）
+export const apiTailorResume = (jobId: string, data?: { diagnosisId?: string }) =>
+  request({ url: `/jobs/${jobId}/tailor`, method: 'POST', data: data || {}, timeout: 60000 } as any);
+
+// 查看 / 保存 定制简历
+export const apiGetTailoredResume = (id: string) =>
+  request({ url: `/tailored-resumes/${id}`, method: 'GET' } as any);
+
+export const apiSaveTailoredResume = (id: string, content: Record<string, any>) =>
+  request({ url: `/tailored-resumes/${id}`, method: 'PUT', data: { content } } as any);
 
 export const apiFavoriteJob = (id: string) =>
   request({ url: `/jobs/${id}/favorite`, method: 'POST' } as any);
@@ -35,7 +48,7 @@ export const apiFavoriteJob = (id: string) =>
 export const apiUnfavoriteJob = (id: string) =>
   request({ url: `/jobs/${id}/favorite`, method: 'DELETE' } as any);
 
-export const apiGetMyDeliveries = (params?: { page?: number; limit?: number }) =>
+export const apiGetMyDeliveries = (params?: { page?: number; limit?: number; type?: 'NORMAL' | 'TARGETED' }) =>
   request({ url: '/jobs/my-deliveries', method: 'GET', data: params } as any);
 
 export const apiGetMyFavorites = (params?: { page?: number; limit?: number }) =>
@@ -70,7 +83,7 @@ export const apiGetResumeProfile = () =>
 
 export const apiUpdateResumeProfile = (data: {
   realName?: string; gender?: string; birthDate?: string; city?: string; roleTitle?: string;
-  email?: string; workStartDate?: string;
+  email?: string; workStartDate?: string; currentAnnualSalary?: number; currentLevel?: string;
 }) => request({ url: '/resume/profile', method: 'PUT', data } as any);
 
 export const apiGetSelfDesc = () =>

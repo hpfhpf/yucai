@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsDateString,
+  IsEmail,
   IsEnum,
   IsInt,
   IsOptional,
@@ -35,6 +36,8 @@ export class UpdateProfileDto {
   @IsOptional() @IsString() realName?: string;
   @IsOptional() @IsEnum(Gender) gender?: Gender;
   @IsOptional() @IsDateString() birthDate?: string;
+  @IsOptional() @IsEmail() email?: string;
+  @IsOptional() @IsDateString() workStartDate?: string; // 参加工作时间
   @IsOptional() @IsString() city?: string;
   @IsOptional() @IsString() roleTitle?: string;
   @IsOptional() @IsInt() @Min(0) currentAnnualSalary?: number; // 当前综合年薪，万/年

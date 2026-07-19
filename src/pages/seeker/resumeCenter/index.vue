@@ -60,14 +60,16 @@
                     </view>
 
                     <template v-if="education.length">
-                        <view v-for="edu in education" :key="edu.id" class="row" hover-class="row--pressed"
-                            @click="handleRowTap('education', edu.id)">
-                            <view class="row__main">
+                        <view v-for="edu in education" :key="edu.id" class="eduRow">
+                            <view class="eduRow__top">
                                 <view class="row__primary">{{ edu.school }}</view>
-                            </view>
-                            <view class="row__right">
                                 <view class="row__meta">{{ edu.range }}</view>
-                                <view class="row__chev" />
+                            </view>
+                            <view class="step-actions">
+                                <view class="step-btn step-btn--delete"
+                                    @click.stop="handleDeleteEducation(edu.id)">删除</view>
+                                <view class="step-btn step-btn--edit"
+                                    @click.stop="handleEditEducation(edu.id)">编辑</view>
                             </view>
                         </view>
                     </template>
@@ -185,7 +187,7 @@ import BottomNav from '@/components/BottomNav.vue'
 import FaIcon from '@/components/FaIcon/index.vue'
 import { parseAvatar } from '@/utils/avatar'
 import { goPageAddProject, goPageAddJob, goPageAddEducation, goPageAddInformation, goPageAddSelfDesc } from '@/utils/route'
-import { apiGetResumeProfile, apiGetSelfDesc, apiGetEducations, apiGetWorkExps, apiGetProjectExps, apiGetUserMe, apiDeleteWorkExp, apiDeleteProjectExp, apiGetCertifications, apiCancelWorkCert } from '@/api/index'
+import { apiGetResumeProfile, apiGetSelfDesc, apiGetEducations, apiGetWorkExps, apiGetProjectExps, apiGetUserMe, apiDeleteWorkExp, apiDeleteProjectExp, apiDeleteEducation, apiGetCertifications, apiCancelWorkCert } from '@/api/index'
 
 const user = ref({ name: '', role: '', phone: '', annualSalary: null as number | null, level: '' })
 const selfDesc = ref('')
@@ -292,7 +294,6 @@ onShow(() => {
 
 type EditKey = 'name' | 'summary'
 type AddKey = 'education' | 'work' | 'project'
-type RowKey = AddKey
 
 const handleEdit = (key: EditKey) => {
     if (key === 'name') goPageAddInformation()
@@ -305,7 +306,25 @@ const handleAdd = (key: AddKey) => {
     else if (key === 'education') goPageAddEducation()
 }
 
-const handleRowTap = (_kind: RowKey, _id: string) => { }
+const handleEditEducation = (id: string) => {
+    uni.navigateTo({ url: `/pages/seeker/resumeCenter/education?id=${id}` as any })
+}
+
+const handleDeleteEducation = (id: string) => {
+    uni.showModal({
+        title: '确认删除',
+        content: '删除后不可恢复，确认删除该教育经历？',
+        confirmColor: '#ff4444',
+        success: async ({ confirm }) => {
+            if (!confirm) return
+            try {
+                await apiDeleteEducation(id)
+                education.value = education.value.filter(e => e.id !== id)
+                uni.showToast({ title: '已删除', icon: 'success' })
+            } catch { }
+        },
+    })
+}
 
 const handleDeleteWork = (id: string) => {
     uni.showModal({
@@ -565,6 +584,18 @@ const handleCancelCert = (id: string) => {
 
 .row--pressed {
     opacity: 0.92;
+}
+
+.eduRow {
+    margin-top: 10rpx;
+    padding-bottom: 14rpx;
+}
+
+.eduRow__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12rpx;
 }
 
 .row__primary {

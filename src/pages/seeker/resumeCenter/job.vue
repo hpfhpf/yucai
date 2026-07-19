@@ -17,15 +17,15 @@
                         <wd-form-item title="入职时间" prop="startMonth">
                             <wd-cell custom-class="calendarCell" :value="formatDate(form.startMonth)" is-link
                                 @click="showStartCalendar = true" />
-                            <wd-calendar v-model="form.startMonth" v-model:visible="showStartCalendar" type="date"
-                                @confirm="handleStartConfirm" />
+                            <wd-calendar v-model="form.startMonth" v-model:visible="showStartCalendar" type="month"
+                                :min-date="minDate" :max-date="maxDate" @confirm="handleStartConfirm" />
                         </wd-form-item>
 
                         <wd-form-item title="离职时间" prop="endMonth">
                             <wd-cell custom-class="calendarCell" :value="formatDate(form.endMonth)" is-link
                                 @click="showEndCalendar = true" />
-                            <wd-calendar v-model="form.endMonth" v-model:visible="showEndCalendar" type="date"
-                                @confirm="handleEndConfirm" />
+                            <wd-calendar v-model="form.endMonth" v-model:visible="showEndCalendar" type="month"
+                                :min-date="minDate" :max-date="maxDate" @confirm="handleEndConfirm" />
                         </wd-form-item>
 
                         <wd-form-item prop="content">
@@ -52,8 +52,8 @@ import { apiCreateWorkExp, apiUpdateWorkExp, apiGetWorkExps } from '@/api/index'
 interface WorkForm {
     company: string
     position: string
-    startMonth: string | Date
-    endMonth: string | Date
+    startMonth: number | Date | null
+    endMonth: number | Date | null
     content: string
 }
 
@@ -64,13 +64,16 @@ const pageTitle = computed(() => isEdit.value ? '编辑工作经历' : '添加�
 const form = ref<WorkForm>({
     company: '',
     position: '',
-    startMonth: '',
-    endMonth: '',
+    startMonth: null,
+    endMonth: null,
     content: '',
 })
 
 const showStartCalendar = ref(false)
 const showEndCalendar = ref(false)
+
+const maxDate = Date.now()
+const minDate = new Date('1960-01-01').getTime()
 
 const formatDate = (date: string | Date | null): string => {
     if (!date) return '请选择'
@@ -82,11 +85,29 @@ const formatDate = (date: string | Date | null): string => {
 }
 
 const handleStartConfirm = ({ value }: { value: Date }): void => {
+    if (value > maxDate) {
+        uni.showToast({ title: '不能选择未来日期', icon: 'none' })
+        return
+    }
+    if (form.value.endMonth && value > new Date(form.value.endMonth)) {
+        uni.showToast({ title: '入职时间不得晚于离职时间', icon: 'none' })
+        return
+    }
     form.value.startMonth = value
+    showStartCalendar.value = false
 }
 
 const handleEndConfirm = ({ value }: { value: Date }): void => {
+    if (value > maxDate) {
+        uni.showToast({ title: '不能选择未来日期', icon: 'none' })
+        return
+    }
+    if (form.value.startMonth && value < new Date(form.value.startMonth)) {
+        uni.showToast({ title: '离职时间不得早于入职时间', icon: 'none' })
+        return
+    }
     form.value.endMonth = value
+    showEndCalendar.value = false
 }
 
 onMounted(async () => {
@@ -102,8 +123,8 @@ onMounted(async () => {
             form.value.company = item.company || ''
             form.value.position = item.title || ''
             form.value.content = item.content || ''
-            form.value.startMonth = item.startDate ? new Date(item.startDate) : ''
-            form.value.endMonth = item.endDate ? new Date(item.endDate) : ''
+            form.value.startMonth = item.startDate ? new Date(item.startDate).getTime() : null
+            form.value.endMonth = item.endDate ? new Date(item.endDate).getTime() : null
         }
     } catch { }
 })
@@ -121,6 +142,14 @@ const handleSave = async (): Promise<void> => {
     }
     if (!form.value.startMonth) {
         uni.showToast({ title: '请选择入职时间', icon: 'none' })
+        return
+    }
+    if (!form.value.endMonth) {
+        uni.showToast({ title: '请选择离职时间', icon: 'none' })
+        return
+    }
+    if (new Date(form.value.startMonth) > new Date(form.value.endMonth)) {
+        uni.showToast({ title: '入职时间不得晚于离职时间', icon: 'none' })
         return
     }
 

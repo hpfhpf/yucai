@@ -17,15 +17,15 @@
                         <wd-form-item title="开始时间" prop="startTime">
                             <wd-cell custom-class="calendarCell" :value="formatDate(form.startTime)" is-link
                                 @click="showStartCalendar = true" />
-                            <wd-calendar v-model="form.startTime" v-model:visible="showStartCalendar" type="date"
-                                @confirm="handleStartConfirm" />
+                            <wd-calendar v-model="form.startTime" v-model:visible="showStartCalendar" type="month"
+                                :min-date="minDate" :max-date="maxDate" @confirm="handleStartConfirm" />
                         </wd-form-item>
 
                         <wd-form-item title="结束时间" prop="endTime">
                             <wd-cell custom-class="calendarCell" :value="formatDate(form.endTime)" is-link
                                 @click="showEndCalendar = true" />
-                            <wd-calendar v-model="form.endTime" v-model:visible="showEndCalendar" type="date"
-                                @confirm="handleEndConfirm" />
+                            <wd-calendar v-model="form.endTime" v-model:visible="showEndCalendar" type="month"
+                                :min-date="minDate" :max-date="maxDate" @confirm="handleEndConfirm" />
                         </wd-form-item>
 
                         <wd-form-item prop="content">
@@ -53,16 +53,27 @@ const editId = ref('')
 const isEdit = computed(() => !!editId.value)
 const pageTitle = computed(() => isEdit.value ? '编辑项目经历' : '添加项目经历')
 
-const form = ref({
+type DateValue = number | Date | null
+
+const form = ref<{
+    projectName: string
+    role: string
+    startTime: DateValue
+    endTime: DateValue
+    content: string
+}>({
     projectName: '',
     role: '',
-    startTime: '',
-    endTime: '',
+    startTime: null,
+    endTime: null,
     content: '',
 })
 
 const showStartCalendar = ref(false)
 const showEndCalendar = ref(false)
+
+const maxDate = Date.now()
+const minDate = new Date('1960-01-01').getTime()
 
 const formatDate = (date: string | Date | null) => {
     if (!date) return '请选择'
@@ -70,16 +81,33 @@ const formatDate = (date: string | Date | null) => {
     if (isNaN(d.getTime())) return '请选择'
     const year = d.getFullYear()
     const month = String(d.getMonth() + 1).padStart(2, '0')
-    const day = String(d.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
+    return `${year}年${month}月`
 }
 
 const handleStartConfirm = ({ value }: any) => {
+    if (value > maxDate) {
+        uni.showToast({ title: '不能选择未来日期', icon: 'none' })
+        return
+    }
+    if (form.value.endTime && value > new Date(form.value.endTime).getTime()) {
+        uni.showToast({ title: '开始时间不得晚于结束时间', icon: 'none' })
+        return
+    }
     form.value.startTime = value
+    showStartCalendar.value = false
 }
 
 const handleEndConfirm = ({ value }: any) => {
+    if (value > maxDate) {
+        uni.showToast({ title: '不能选择未来日期', icon: 'none' })
+        return
+    }
+    if (form.value.startTime && value < new Date(form.value.startTime).getTime()) {
+        uni.showToast({ title: '结束时间不得早于开始时间', icon: 'none' })
+        return
+    }
     form.value.endTime = value
+    showEndCalendar.value = false
 }
 
 onMounted(async () => {
@@ -95,8 +123,8 @@ onMounted(async () => {
             form.value.projectName = item.name || ''
             form.value.role = item.role || ''
             form.value.content = item.content || ''
-            form.value.startTime = item.startDate ? new Date(item.startDate) as any : ''
-            form.value.endTime = item.endDate ? new Date(item.endDate) as any : ''
+            form.value.startTime = item.startDate ? new Date(item.startDate).getTime() : null
+            form.value.endTime = item.endDate ? new Date(item.endDate).getTime() : null
         }
     } catch { }
 })

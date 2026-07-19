@@ -82,13 +82,19 @@ enum RecStatus {
   REVIEW
 }
 
+// 投递类型：普通投递 / 定向投递（携带 AI 定制简历快照）
+enum DeliveryType {
+  NORMAL
+  TARGETED
+}
+
 // 职级体系：骨干员工 / 团队主管 / 中高层管理 / 决策层
 // 数值顺序对应过滤逻辑（越高越资深），Prisma 枚举按声明顺序比较
 enum CareerLevel {
-  IC        // 骨干员工（高级专员/资深工程师）
-  LEAD      // 团队主管（组长/技术 Leader）
-  MGR_DIR   // 中高层管理（部门经理/总监）
-  VP_C      // 决策层（VP/C-Level/合伙人）
+  IC // 骨干员工（高级专员/资深工程师）
+  LEAD // 团队主管（组长/技术 Leader）
+  MGR_DIR // 中高层管理（部门经理/总监）
+  VP_C // 决策层（VP/C-Level/合伙人）
 }
 
 // ===========================
@@ -113,6 +119,8 @@ model User {
   receivedMessages Message[]             @relation("MessageReceiver")
   deliveries       Delivery[]
   favorites        JobFavorite[]
+  diagnoses        ResumeDiagnosis[]
+  tailoredResumes  TailoredResume[]
   idVerification   IdentityVerification?
   certTargets      WorkCertification[]   @relation("CertTarget")
   certifierOf      WorkCertification[]   @relation("Certifier")
@@ -127,18 +135,20 @@ model User {
 // ===========================
 
 model SeekerProfile {
-  id        String    @id @default(cuid())
-  userId    String    @unique @map("user_id")
-  realName  String?   @map("real_name")
-  gender    Gender    @default(UNKNOWN)
-  birthDate DateTime? @map("birth_date")
-  city      String?
-  roleTitle            String?      @map("role_title")
-  selfDesc             String?      @db.Text @map("self_desc")
-  currentAnnualSalary  Int?         @map("current_annual_salary") // 当前综合年薪，万/年
-  currentLevel         CareerLevel? @map("current_level")          // 当前职级
-  createdAt            DateTime     @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
+  id                  String       @id @default(cuid())
+  userId              String       @unique @map("user_id")
+  realName            String?      @map("real_name")
+  gender              Gender       @default(UNKNOWN)
+  birthDate           DateTime?    @map("birth_date")
+  email               String?
+  workStartDate       DateTime?    @map("work_start_date") // 参加工作时间
+  city                String?
+  roleTitle           String?      @map("role_title")
+  selfDesc            String?      @map("self_desc") @db.Text
+  currentAnnualSalary Int?         @map("current_annual_salary") // 当前综合年薪，万/年
+  currentLevel        CareerLevel? @map("current_level") // 当前职级
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
 
   user        User                @relation(fields: [userId], references: [id])
   educations  Education[]
@@ -277,32 +287,34 @@ model Recruiter {
 // ===========================
 
 model Job {
-  id          String    @id @default(cuid())
-  recruiterId String    @map("recruiter_id")
-  companyId   String    @map("company_id")
-  title       String
-  nature      JobNature @default(FULL_TIME)
-  province    String?
-  city        String?
-  district    String?
-  address     String?
-  salaryRange    String?     @map("salary_range")
-  annualSalaryMin Int?       @map("annual_salary_min") // 年薪下限，万/年
-  annualSalaryMax Int?       @map("annual_salary_max") // 年薪上限，万/年
-  levelTag       CareerLevel? @map("level_tag")        // AI 异步打标的职级（可空）
-  minDegree      Degree      @default(ANY) @map("min_degree")
-  minExpYears Int       @default(0) @map("min_exp_years")
-  description String    @db.Text
-  perks       Json?
-  status      JobStatus @default(ACTIVE)
-  viewCount   Int       @default(0) @map("view_count")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id              String       @id @default(cuid())
+  recruiterId     String       @map("recruiter_id")
+  companyId       String       @map("company_id")
+  title           String
+  nature          JobNature    @default(FULL_TIME)
+  province        String?
+  city            String?
+  district        String?
+  address         String?
+  salaryRange     String?      @map("salary_range")
+  annualSalaryMin Int?         @map("annual_salary_min") // 年薪下限，万/年
+  annualSalaryMax Int?         @map("annual_salary_max") // 年薪上限，万/年
+  levelTag        CareerLevel? @map("level_tag") // AI 异步打标的职级（可空）
+  minDegree       Degree       @default(ANY) @map("min_degree")
+  minExpYears     Int          @default(0) @map("min_exp_years")
+  description     String       @db.Text
+  perks           Json?
+  status          JobStatus    @default(ACTIVE)
+  viewCount       Int          @default(0) @map("view_count")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
 
-  recruiter  Recruiter   @relation(fields: [recruiterId], references: [id])
-  company    Company     @relation(fields: [companyId], references: [id])
-  deliveries Delivery[]
-  favorites  JobFavorite[]
+  recruiter       Recruiter         @relation(fields: [recruiterId], references: [id])
+  company         Company           @relation(fields: [companyId], references: [id])
+  deliveries      Delivery[]
+  favorites       JobFavorite[]
+  diagnoses       ResumeDiagnosis[]
+  tailoredResumes TailoredResume[]
 
   @@index([companyId])
   @@index([status, createdAt])
@@ -319,17 +331,61 @@ model Delivery {
   userId           String         @map("user_id")
   jobId            String         @map("job_id")
   status           DeliveryStatus @default(PENDING)
+  type             DeliveryType   @default(NORMAL)
+  tailoredResumeId String?        @unique @map("tailored_resume_id")
   creditAuthorized Boolean        @default(false) @map("credit_authorized")
   createdAt        DateTime       @default(now()) @map("created_at")
   updatedAt        DateTime       @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id])
-  job  Job  @relation(fields: [jobId], references: [id])
+  user           User            @relation(fields: [userId], references: [id])
+  job            Job             @relation(fields: [jobId], references: [id])
+  tailoredResume TailoredResume? @relation(fields: [tailoredResumeId], references: [id])
 
   @@unique([userId, jobId])
   @@index([userId])
   @@index([jobId])
+  @@index([userId, type])
   @@map("deliveries")
+}
+
+// ===========================
+// AI 简历诊断快照
+// ===========================
+
+model ResumeDiagnosis {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  jobId      String   @map("job_id")
+  matchScore Int?     @map("match_score") // 0-100 整体匹配度
+  issues     Json // [{ field, severity, mismatch, suggestion }]
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+  job  Job  @relation(fields: [jobId], references: [id])
+
+  @@index([userId, jobId])
+  @@map("resume_diagnoses")
+}
+
+// ===========================
+// AI 定向定制简历快照（与主简历解耦）
+// ===========================
+
+model TailoredResume {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  jobId       String   @map("job_id")
+  diagnosisId String?  @map("diagnosis_id")
+  content     Json // 定制后的完整简历快照
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user     User      @relation(fields: [userId], references: [id])
+  job      Job       @relation(fields: [jobId], references: [id])
+  delivery Delivery?
+
+  @@index([userId, jobId])
+  @@map("tailored_resumes")
 }
 
 // ===========================
@@ -391,11 +447,11 @@ model WorkCertification {
   certifierType  CertifierType @map("certifier_type")
   status         CertStatus    @default(PENDING)
   note           String?
-  relationship   String?       @map("relationship")   // SUPERVISOR | COLLEAGUE | HR
+  relationship   String?       @map("relationship") // SUPERVISOR | COLLEAGUE | HR
   anonymous      Boolean       @default(false)
   knowFrom       DateTime?     @map("know_from")
   knowTo         DateTime?     @map("know_to")
-  recommendation String?       @db.Text @map("recommendation")
+  recommendation String?       @map("recommendation") @db.Text
   shareToken     String?       @unique @map("share_token")
   shareExpireAt  DateTime?     @map("share_expire_at")
   createdAt      DateTime      @default(now()) @map("created_at")

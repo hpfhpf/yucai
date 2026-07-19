@@ -49,7 +49,9 @@ interface NavigateToOptions {
        "/pages/seeker/resumeCenter/job" |
        "/pages/seeker/resumeCenter/project" |
        "/pages/seeker/resumeCenter/selfDesc" |
-       "/pages/seeker/resumeCenter/workCertification";
+       "/pages/seeker/resumeCenter/workCertification" |
+       "/pages/seeker/tailorResume/detail" |
+       "/pages/seeker/tailorResume/index";
 }
 interface RedirectToOptions extends NavigateToOptions {}
 

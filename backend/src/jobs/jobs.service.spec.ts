@@ -33,8 +33,11 @@ describe('JobsService', () => {
       },
     };
 
+    // AiService mock（诊断/定制方法在本测试文件中不涉及）
+    const mockAi = { diagnose: vi.fn(), tailor: vi.fn() };
+
     // 直接注入 mock，绕开 NestJS 的 TestingModule
-    service = new JobsService(mockPrisma as PrismaService);
+    service = new JobsService(mockPrisma as PrismaService, mockAi as any);
   });
 
   describe('list', () => {

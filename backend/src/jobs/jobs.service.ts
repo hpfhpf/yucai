@@ -3,13 +3,22 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { CreateJobDto, UpdateJobDto, ListJobsQuery, DeliverJobDto } from './dto/jobs.dto';
+import { AiService } from '../ai/ai.service';
+import {
+  DiagnoseStreamEvent,
+  JobSummary,
+  ResumeSnapshot,
+} from '../ai/ai.types';
 
 // CareerLevel 枚举顺序（数值越大越高级，用于 >= 过滤）
 const CAREER_LEVEL_ORDER = { IC: 0, LEAD: 1, MGR_DIR: 2, VP_C: 3 };
 
 @Injectable()
 export class JobsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly ai: AiService,
+  ) {}
 
   // ===== 职位列表（求职者浏览）=====
 
@@ -34,8 +43,13 @@ export class JobsService {
       const filterAnd: any[] = [];
 
       if (profile?.currentAnnualSalary != null) {
-        // 严格过滤：必须有结构化年薪且下限 >= 求职者当前年薪；无年薪字段的旧数据不展示
-        filterAnd.push({ annualSalaryMin: { gte: profile.currentAnnualSalary } });
+        // 年薪过滤：职位年薪下限 >= 求职者当前年薪；annualSalaryMin=null（AI 未打标）的职位仍展示
+        filterAnd.push({
+          OR: [
+            { annualSalaryMin: null },
+            { annualSalaryMin: { gte: profile.currentAnnualSalary } },
+          ],
+        });
       }
 
       if (profile?.currentLevel != null) {
@@ -161,19 +175,37 @@ export class JobsService {
     });
     if (existing) throw new BadRequestException('已投递过该职位');
 
+    // 定向投递：校验定制简历归属与职位一致性
+    if (dto.type === 'TARGETED') {
+      if (!dto.tailoredResumeId) throw new BadRequestException('缺少定制简历');
+      const tr = await this.prisma.tailoredResume.findUnique({
+        where: { id: dto.tailoredResumeId },
+      });
+      if (!tr || tr.userId !== userId || tr.jobId !== jobId) {
+        throw new BadRequestException('定制简历无效');
+      }
+    }
+
     return this.prisma.delivery.create({
-      data: { userId, jobId, creditAuthorized: dto.creditAuthorized },
+      data: {
+        userId,
+        jobId,
+        creditAuthorized: dto.creditAuthorized,
+        type: dto.type === 'TARGETED' ? 'TARGETED' : 'NORMAL',
+        tailoredResumeId: dto.type === 'TARGETED' ? dto.tailoredResumeId : null,
+      },
     });
   }
 
   // ===== 我的投递记录 =====
-
-  async myDeliveries(userId: string, page = 1, limit = 10) {
+  // type 可选：'NORMAL' | 'TARGETED'，不传返回全部
+  async myDeliveries(userId: string, page = 1, limit = 10, type?: 'NORMAL' | 'TARGETED') {
     const skip = (page - 1) * limit;
+    const where = { userId, ...(type ? { type } : {}) };
     const [total, items] = await Promise.all([
-      this.prisma.delivery.count({ where: { userId } }),
+      this.prisma.delivery.count({ where }),
       this.prisma.delivery.findMany({
-        where: { userId },
+        where,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
@@ -256,5 +288,102 @@ export class JobsService {
     if (!job) throw new NotFoundException('职位不存在');
     if (job.recruiterId !== recruiter.id) throw new ForbiddenException('无权操作他人职位');
     return job;
+  }
+
+  // ===== AI 诊断 / 定制 =====
+
+  // 聚合当前用户主简历为快照
+  private async buildResumeSnapshot(userId: string): Promise<ResumeSnapshot> {
+    const profile = await this.prisma.seekerProfile.findUnique({ where: { userId } });
+    if (!profile) throw new BadRequestException('请先完善简历');
+    const [educations, workExps, projectExps] = await Promise.all([
+      this.prisma.education.findMany({ where: { profileId: profile.id }, orderBy: { sortOrder: 'asc' } }),
+      this.prisma.workExperience.findMany({ where: { profileId: profile.id }, orderBy: { sortOrder: 'asc' } }),
+      this.prisma.projectExperience.findMany({ where: { profileId: profile.id }, orderBy: { sortOrder: 'asc' } }),
+    ]);
+    return {
+      realName: profile.realName || undefined,
+      roleTitle: profile.roleTitle || undefined,
+      city: profile.city || undefined,
+      selfDesc: profile.selfDesc || undefined,
+      educations,
+      workExps,
+      projectExps,
+    };
+  }
+
+  private async loadJobSummary(jobId: string): Promise<JobSummary> {
+    const job = await this.prisma.job.findUnique({ where: { id: jobId } });
+    if (!job || job.status !== 'ACTIVE') throw new NotFoundException('职位不存在或已关闭');
+    return {
+      title: job.title,
+      salaryRange: job.salaryRange || undefined,
+      minDegree: job.minDegree,
+      minExpYears: job.minExpYears,
+      description: job.description,
+      perks: (job.perks as string[]) || undefined,
+    };
+  }
+
+  // 流式诊断：逐块回调进度，结束落库 ResumeDiagnosis
+  async diagnoseStream(
+    userId: string,
+    jobId: string,
+    onEvent: (e: DiagnoseStreamEvent) => void,
+  ): Promise<void> {
+    const [resume, job] = await Promise.all([
+      this.buildResumeSnapshot(userId),
+      this.loadJobSummary(jobId),
+    ]);
+    // 拦截 ai 的 done 事件：先不转发，待落库拿到 id 后补发带 diagnosisId 的 done
+    const result = await this.ai.diagnose(resume, job, (e) => {
+      if (e.stage === 'done') return;
+      onEvent(e);
+    });
+    const saved = await this.prisma.resumeDiagnosis.create({
+      data: {
+        userId,
+        jobId,
+        matchScore: result.matchScore ?? null,
+        issues: result.issues as any,
+      },
+    });
+    onEvent({ stage: 'done', percent: 100, result, diagnosisId: saved.id } as any);
+  }
+
+  // 生成定制简历草稿并落库
+  async tailorResume(userId: string, jobId: string, diagnosisId?: string) {
+    const [resume, job] = await Promise.all([
+      this.buildResumeSnapshot(userId),
+      this.loadJobSummary(jobId),
+    ]);
+    let issues: unknown;
+    if (diagnosisId) {
+      const diag = await this.prisma.resumeDiagnosis.findUnique({ where: { id: diagnosisId } });
+      if (diag && diag.userId === userId) issues = diag.issues;
+    }
+    const content = await this.ai.tailor(resume, job, issues);
+    return this.prisma.tailoredResume.create({
+      data: { userId, jobId, diagnosisId: diagnosisId || null, content: content as any },
+    });
+  }
+
+  // 保存用户编辑后的定制简历
+  async saveTailoredResume(userId: string, id: string, content: Record<string, any>) {
+    const tr = await this.prisma.tailoredResume.findUnique({ where: { id } });
+    if (!tr) throw new NotFoundException('定制简历不存在');
+    if (tr.userId !== userId) throw new ForbiddenException();
+    return this.prisma.tailoredResume.update({ where: { id }, data: { content: content as any } });
+  }
+
+  // 查看定制简历详情
+  async getTailoredResume(userId: string, id: string) {
+    const tr = await this.prisma.tailoredResume.findUnique({
+      where: { id },
+      include: { job: { include: { company: { select: { name: true, logoUrl: true } } } } },
+    });
+    if (!tr) throw new NotFoundException('定制简历不存在');
+    if (tr.userId !== userId) throw new ForbiddenException();
+    return tr;
   }
 }

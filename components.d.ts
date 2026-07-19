@@ -12,6 +12,7 @@ declare module 'vue' {
     AvatarPicker: typeof import('./src/components/AvatarPicker/index.vue')['default']
     BottomNav: typeof import('./src/components/BottomNav.vue')['default']
     ChatPopup: typeof import('./src/components/ChatPopup/index.vue')['default']
+    DiagnosisPopup: typeof import('./src/components/DiagnosisPopup/index.vue')['default']
     Empty: typeof import('./src/components/Empty/index.vue')['default']
     FaIcon: typeof import('./src/components/FaIcon/index.vue')['default']
     GlobalNotify: typeof import('./src/components/GlobalNotify/index.vue')['default']

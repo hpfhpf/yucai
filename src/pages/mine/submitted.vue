@@ -50,6 +50,29 @@
                     </view>
                 </scroll-view>
             </wd-tab>
+            <wd-tab title="定向投递" name="targeted">
+                <scroll-view class="list" scroll-y>
+                    <view class="list__inner">
+                        <wd-empty v-if="!loading && !listFor('targeted').length" tip="暂无定向投递" />
+                        <view v-for="job in listFor('targeted')" :key="job.id" class="jobCard" hover-class="jobCard--pressed"
+                            @click="handleTailoredTap(job)">
+                            <view class="jobCard__top">
+                                <view class="jobCard__name">{{ job.title }}</view>
+                                <view class="jobCard__salary">{{ job.salary }}</view>
+                            </view>
+                            <view class="jobCard__tags">
+                                <wd-tag size="small" type="primary">定向</wd-tag>
+                                <wd-tag size="small">{{ statusLabel(job.status) }}</wd-tag>
+                                <wd-tag size="small">{{ job.city || '地点不限' }}</wd-tag>
+                            </view>
+                            <view class="jobCard__bottom">
+                                <view class="jobCard__company">{{ job.company }}</view>
+                                <view class="jobCard__time">{{ formatTime(job.createdAt) }} · 查看定制简历 ›</view>
+                            </view>
+                        </view>
+                    </view>
+                </scroll-view>
+            </wd-tab>
         </wd-tabs>
     </view>
 </template>
@@ -59,12 +82,17 @@ import { onMounted, ref } from 'vue'
 import HeaderNav from '@/components/HeaderNav.vue'
 import { apiGetMyDeliveries } from '@/api/index'
 
-type Job = { id: string; jobId: string; title: string; salary: string; city: string; degree: string; company: string; createdAt: string; status: string }
+type Job = { id: string; jobId: string; title: string; salary: string; city: string; degree: string; company: string; createdAt: string; status: string; tailoredResumeId?: string | null }
 
-type TabKey = 'success' | 'viewed'
+type TabKey = 'success' | 'viewed' | 'targeted'
 const activeTab = ref<TabKey>('success')
 const allDeliveries = ref<Job[]>([])
+const targetedList = ref<Job[]>([])
 const loading = ref(false)
+
+const statusText: Record<string, string> = {
+    PENDING: '待查看', VIEWED: '已查看', INTERVIEW: '面试中', ACCEPTED: '已录用', REJECTED: '未通过',
+}
 
 const degreeMap: Record<string, string> = {
     ANY: '学历不限', ASSOCIATE: '大专', BACHELOR: '本科', MASTER: '硕士', DOCTOR: '博士',
@@ -75,7 +103,23 @@ const statusGroups: Record<string, string[]> = {
     viewed: ['INTERVIEW', 'ACCEPTED', 'REJECTED'],
 }
 
-const listFor = (tab: TabKey) => allDeliveries.value.filter(d => statusGroups[tab].includes(d.status))
+const listFor = (tab: TabKey) => {
+    if (tab === 'targeted') return targetedList.value
+    return allDeliveries.value.filter(d => statusGroups[tab]?.includes(d.status))
+}
+
+const mapDelivery = (d: any): Job => ({
+    id: d.id,
+    jobId: d.jobId,
+    title: d.job?.title || '',
+    salary: d.job?.salaryRange || '薪资面议',
+    city: d.job?.city || '',
+    degree: degreeMap[d.job?.minDegree] || '学历不限',
+    company: d.job?.company?.name || '',
+    createdAt: d.createdAt,
+    status: d.status,
+    tailoredResumeId: d.tailoredResumeId,
+})
 
 const formatTime = (iso: string) => {
     const d = new Date(iso)
@@ -85,18 +129,12 @@ const formatTime = (iso: string) => {
 onMounted(async () => {
     loading.value = true
     try {
-        const res: any = await apiGetMyDeliveries({ page: 1, limit: 50 })
-        allDeliveries.value = (res.items || []).map((d: any) => ({
-            id: d.id,
-            jobId: d.jobId,
-            title: d.job?.title || '',
-            salary: d.job?.salaryRange || '薪资面议',
-            city: d.job?.city || '',
-            degree: degreeMap[d.job?.minDegree] || '学历不限',
-            company: d.job?.company?.name || '',
-            createdAt: d.createdAt,
-            status: d.status,
-        }))
+        const [all, targeted]: any[] = await Promise.all([
+            apiGetMyDeliveries({ page: 1, limit: 50 }),
+            apiGetMyDeliveries({ page: 1, limit: 50, type: 'TARGETED' }),
+        ])
+        allDeliveries.value = (all.items || []).map(mapDelivery)
+        targetedList.value = (targeted.items || []).map(mapDelivery)
     } catch {
         // 错误由 request.ts 统一处理
     } finally {
@@ -108,6 +146,14 @@ const handleTabChange = ({ name }: { name: TabKey }) => { activeTab.value = name
 const handleJobTap = (jobId: string) => {
     uni.navigateTo({ url: `/pages/recommendation/detail/index?id=${jobId}` as any })
 }
+
+// 定向投递卡片：查看当次投递关联的定制简历详情
+const handleTailoredTap = (job: Job) => {
+    if (!job.tailoredResumeId) return
+    uni.navigateTo({ url: `/pages/seeker/tailorResume/detail?id=${job.tailoredResumeId}` as any })
+}
+
+const statusLabel = (s: string) => statusText[s] || s
 </script>
 
 <style scoped lang="scss">

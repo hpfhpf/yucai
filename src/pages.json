@@ -245,10 +245,7 @@
     {
       "path": "pages/recruiter/myJobs",
       "type": "page",
-      "style": {
-        "navigationStyle": "custom",
-        "navigationBarTitleText": ""
-      }
+      "style": {}
     },
     {
       "path": "pages/recruiter/newsDetail",
@@ -288,10 +285,7 @@
     {
       "path": "pages/recruiter/resumeDetail",
       "type": "page",
-      "style": {
-        "navigationStyle": "custom",
-        "navigationBarTitleText": ""
-      }
+      "style": {}
     },
     {
       "path": "pages/recruiter/talents",
@@ -395,10 +389,7 @@
     {
       "path": "pages/seeker/resumeCenter/selfDesc",
       "type": "page",
-      "style": {
-        "navigationStyle": "custom",
-        "navigationBarTitleText": ""
-      }
+      "style": {}
     },
     {
       "path": "pages/seeker/resumeCenter/workCertification",
@@ -408,6 +399,19 @@
         "navigationBarTitleText": ""
       },
       "needLogin": true
+    },
+    {
+      "path": "pages/seeker/tailorResume/detail",
+      "type": "page",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": ""
+      }
+    },
+    {
+      "path": "pages/seeker/tailorResume/index",
+      "type": "page",
+      "style": {}
     }
   ],
   "globalStyle": {
