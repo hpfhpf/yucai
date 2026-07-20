@@ -43,8 +43,8 @@
                     <wd-cell title="有效期" :value="validDateText || '请选择有效期'" center is-link
                         @click="showValidDatePicker = true" />
                 </wd-cell-group>
-                <wd-datetime-picker type="year-month" v-model="validDate" v-model:visible="showValidDatePicker"
-                    title="选择有效期" @confirm="handleConfirm" />
+                <wd-calendar type="monthrange" v-model="validDate" v-model:visible="showValidDatePicker"
+                    :min-date="minDate" :max-date="maxDate" title="选择有效期" @confirm="handleConfirm" />
 
 
                 <view class="bottom" :style="{ paddingBottom: `${safeBottom}px` }">
@@ -53,8 +53,7 @@
                         <view class="agree__text">同意对个人信用评估</view>
                     </view>
 
-                    <wd-button type="primary" block :disabled="!canSubmit" custom-class="submit-btn"
-                        @click="handleSubmit">
+                    <wd-button type="primary" block custom-class="submit-btn" @click="handleSubmit">
                         提交
                     </wd-button>
                 </view>
@@ -81,6 +80,8 @@ const realName = ref('')
 const idNumber = ref('')
 const validDate = ref<(number | string)[]>([])
 const showValidDatePicker = ref(false)
+const minDate = new Date('1960-01-01').getTime()
+const maxDate = new Date('2060-12-31').getTime()
 const agree = ref(false)
 
 const systemInfo = uni.getWindowInfo()
@@ -90,17 +91,6 @@ const frontImage = computed(() => frontFiles.value[0]?.url || '')
 const backImage = computed(() => backFiles.value[0]?.url || '')
 
 const isIdNumberValid = computed(() => /(^\d{15}$)|(^\d{17}(\d|X|x)$)/.test(idNumber.value.trim()))
-
-const canSubmit = computed(() => {
-    return (
-        !!frontImage.value &&
-        !!backImage.value &&
-        realName.value.trim().length > 0 &&
-        isIdNumberValid.value &&
-        validDate.value.length === 2 &&
-        agree.value
-    )
-})
 
 const onFrontChange = ({ fileList }: { fileList: UploadFileItem[] }) => {
     frontFiles.value = fileList
@@ -129,8 +119,28 @@ const handleConfirm = ({ value }: { value: (number | string)[] }) => {
 }
 
 const handleSubmit = () => {
-    if (!canSubmit.value) {
-        uni.showToast({ title: '请完善信息后提交', icon: 'none' })
+    if (!frontImage.value) {
+        uni.showToast({ title: '请上传身份证头像面', icon: 'none' })
+        return
+    }
+    if (!backImage.value) {
+        uni.showToast({ title: '请上传身份证国徽面', icon: 'none' })
+        return
+    }
+    if (!realName.value.trim()) {
+        uni.showToast({ title: '请填写真实姓名', icon: 'none' })
+        return
+    }
+    if (!isIdNumberValid.value) {
+        uni.showToast({ title: '请填写正确的身份证号码', icon: 'none' })
+        return
+    }
+    if (!validDateText.value) {
+        uni.showToast({ title: '请选择有效期', icon: 'none' })
+        return
+    }
+    if (!agree.value) {
+        uni.showToast({ title: '请勾选同意个人信用评估', icon: 'none' })
         return
     }
     uni.showLoading({ title: '提交中' })
