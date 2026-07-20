@@ -52,7 +52,7 @@ const isRecruiter = userInfo?.role === 'RECRUITER'
 const seekerItems: NavItem[] = [
     { key: 'home', label: '首页', path: '/pages/seeker/index' },
     { key: 'message', label: '消息', path: '/pages/message/index' },
-    { key: 'resume', label: '简历中心', path: '/pages/seeker/resumeCenter/index' },
+    { key: 'resume', label: '个人简历', path: '/pages/seeker/resumeCenter/index' },
     { key: 'mine', label: '我的', path: '/pages/mine/index' },
 ]
 

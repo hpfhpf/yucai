@@ -119,7 +119,7 @@ const handleCardTap = (item: RecItem) => {
             uni.showToast({ title: '认证链接已失效，请联系对方重新发送', icon: 'none' })
             return
         }
-        uni.navigateTo({ url: `/pages/seeker/resumeCenter/workCertification?shareToken=${item.shareToken}` as any })
+        uni.navigateTo({ url: `/pages/seeker/resumeCenter/workCertification/index?shareToken=${item.shareToken}` as any })
     } else {
         detailItem.value = item
         detailShown.value = true

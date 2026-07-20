@@ -1,6 +1,6 @@
 <template>
     <view class="page">
-        <HeaderNav title="个人中心" type="show-back" theme="000" />
+        <HeaderNav title="个人简历" type="show-back" theme="000" />
 
         <scroll-view class="scroll" scroll-y>
             <view class="content">
@@ -61,7 +61,7 @@
 
                     <template v-if="education.length">
                         <view v-for="edu in education" :key="edu.id" class="eduRow">
-                            <view class="eduRow__top">
+                            <view class="eduRow__top eduRow__top--column">
                                 <view class="row__primary">{{ edu.school }}</view>
                                 <view class="row__meta">{{ edu.range }}</view>
                             </view>
@@ -89,9 +89,9 @@
                     <wd-steps :active="activeStep" vertical dot>
                         <wd-step v-for="item in workSteps" :key="item.id" :status="item.status">
                             <template #title>
-                                <view class="step-title">
-                                    <text>{{ item.company }}</text>
-                                    <text class="step-time">{{ item.range }}</text>
+                                <view class="step-title step-title--column">
+                                    <text class="step-title__name">{{ item.company }}</text>
+                                    <text class="step-title__time">{{ item.range }}</text>
                                 </view>
                             </template>
 
@@ -148,9 +148,9 @@
                     <wd-steps :active="projectStep" vertical dot>
                         <wd-step v-for="item in projectSteps" :key="item.id" :status="item.status">
                             <template #title>
-                                <view class="step-title">
-                                    <text>{{ item.company }}</text>
-                                    <text class="step-time">{{ item.range }}</text>
+                                <view class="step-title step-title--column">
+                                    <text class="step-title__name">{{ item.company }}</text>
+                                    <text class="step-title__time">{{ item.range }}</text>
                                 </view>
                             </template>
 
@@ -222,6 +222,18 @@ const formatRange = (start?: string, end?: string) => {
     return `${fmt(start || '')} ~ ${end ? fmt(end) : '至今'}`
 }
 
+// 格式为 MMMM年YY月（如 2024年06月），用于工作经历与项目经历
+const formatMonthRange = (start?: string, end?: string) => {
+    const fmt = (d: string) => {
+        if (!d) return ''
+        const date = new Date(d)
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        return `${year}年${month}月`
+    }
+    return `${fmt(start || '')} ~ ${end ? fmt(end) : '至今'}`
+}
+
 const loadResumeData = async () => {
     try {
         const [meRes, profileRes, descRes, eduRes, workRes, projRes] = await Promise.all([
@@ -244,14 +256,14 @@ const loadResumeData = async () => {
         education.value = ((eduRes as any) as any[]).map((e: any) => ({
             id: e.id,
             school: e.school,
-            range: formatRange(e.startDate, e.endDate),
+            range: formatMonthRange(e.startDate, e.endDate),
         }))
         workSteps.value = ((workRes as any) as any[]).map((w: any, i: number) => ({
             id: w.id,
             company: w.company,
             companyId: w.companyId || null,
             title: w.title,
-            range: formatRange(w.startDate, w.endDate),
+            range: formatMonthRange(w.startDate, w.endDate),
             city: w.city || '',
             salary: w.salaryMin ? `${w.salaryMin / 1000}k-${w.salaryMax / 1000}k` : '面议',
             tags: Array.isArray(w.skillTags) ? w.skillTags : [],
@@ -263,7 +275,7 @@ const loadResumeData = async () => {
             id: p.id,
             company: p.name,
             title: p.role || '',
-            range: formatRange(p.startDate, p.endDate),
+            range: formatMonthRange(p.startDate, p.endDate),
             tags: Array.isArray(p.techTags) ? p.techTags : [],
             status: i === 0 ? 'process' : 'finished',
         }))
@@ -368,12 +380,12 @@ const handleEditProject = (id: string) => {
 
 // 申请认证：跳转到认证页（内含推荐人弹窗和微信分享流程）
 const handleRequestCert = (item: WorkStep) => {
-    uni.navigateTo({ url: `/pages/seeker/resumeCenter/workCertification?workExpId=${item.id}` as any })
+    uni.navigateTo({ url: `/pages/seeker/resumeCenter/workCertification/index?workExpId=${item.id}` as any })
 }
 
 // 重新发送：同申请入口，认证页内会重新拉取推荐人
 const handleResendCert = (item: WorkStep) => {
-    uni.navigateTo({ url: `/pages/seeker/resumeCenter/workCertification?workExpId=${item.id}&resend=1` as any })
+    uni.navigateTo({ url: `/pages/seeker/resumeCenter/workCertification/index?workExpId=${item.id}&resend=1` as any })
 }
 
 const handleCancelCert = (id: string) => {
@@ -547,6 +559,24 @@ const handleCancelCert = (id: string) => {
     margin-left: 12rpx;
 }
 
+.step-title--column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4rpx;
+}
+
+.step-title__name {
+    font-size: 28rpx;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.82);
+}
+
+.step-title__time {
+    font-size: 24rpx;
+    color: rgba(0, 0, 0, 0.5);
+}
+
 .divider--tight {
     margin: 14rpx 0;
 }
@@ -596,6 +626,17 @@ const handleCancelCert = (id: string) => {
     align-items: center;
     justify-content: space-between;
     gap: 12rpx;
+}
+
+.eduRow__top--column {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4rpx;
+}
+
+.eduRow__top--column .row__meta {
+    font-size: 24rpx;
+    color: rgba(0, 0, 0, 0.5);
 }
 
 .row__primary {

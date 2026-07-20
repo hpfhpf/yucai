@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
@@ -17,6 +17,12 @@ export class CompaniesController {
   @ApiOperation({ summary: '搜索企业' })
   search(@Query() query: SearchCompaniesQuery) {
     return this.companiesService.search(query);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: '获取企业详情' })
+  findById(@Param('id') id: string) {
+    return this.companiesService.findById(id);
   }
 
   @Post()

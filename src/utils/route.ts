@@ -179,10 +179,11 @@ export const goPageChangePhone = () => {
   });
 };
 // 公司详情
-export const goPageCompanyDetail = () => {
-  uni.navigateTo({
-    url: `/pages/recommendation/detail/company`,
-  });
+export const goPageCompanyDetail = (companyId?: string) => {
+  const url = companyId
+    ? `/pages/recommendation/detail/company?id=${encodeURIComponent(companyId)}`
+    : `/pages/recommendation/detail/company`;
+  uni.navigateTo({ url });
 };
 // 岗位详情
 export const goPageJobDetail = (id: string) => {

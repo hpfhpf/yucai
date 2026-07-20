@@ -221,6 +221,7 @@ const job = ref({
     education: '',
     exp: '',
     company: '',
+    companyId: '',
     companyAvatar: '',
     views: '',
     desc: [] as string[],
@@ -256,6 +257,7 @@ onMounted(async () => {
             education: degreeMap[res.minDegree] || '学历不限',
             exp: res.minExpYears != null ? (res.minExpYears === 0 ? '经验不限' : `${res.minExpYears}年`) : '经验不限',
             company: res.company?.name || '',
+            companyId: res.company?.id || '',
             companyAvatar: '',
             views: `${res.viewCount || 0}次`,
             desc,
@@ -291,7 +293,7 @@ const formatRelativeTime = (iso: string) => {
     return new Date(iso).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }) + '发布'
 }
 
-const handleCompanyTap = () => goPageCompanyDetail()
+const handleCompanyTap = () => goPageCompanyDetail(job.value.companyId)
 const handleAddressTap = () => toast.info('打开地图')
 const handleSimilarTap = (id: string) => {
     uni.navigateTo({ url: `/pages/recommendation/detail/index?id=${id}` as any })

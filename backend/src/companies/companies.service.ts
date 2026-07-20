@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { SearchCompaniesQuery, CreateCompanyDto } from './dto/companies.dto';
 
@@ -17,6 +17,29 @@ export class CompaniesService {
       orderBy: { name: 'asc' },
       select: { id: true, name: true, industry: true, scale: true, city: true, isVerified: true, logoUrl: true },
     });
+  }
+
+  async findById(id: string) {
+    const company = await this.prisma.company.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        industry: true,
+        scale: true,
+        city: true,
+        province: true,
+        district: true,
+        address: true,
+        description: true,
+        logoUrl: true,
+        cover: true,
+        isVerified: true,
+        createdAt: true,
+      },
+    });
+    if (!company) throw new NotFoundException('公司不存在');
+    return company;
   }
 
   async create(dto: CreateCompanyDto) {

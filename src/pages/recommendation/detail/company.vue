@@ -5,16 +5,18 @@
             <view class="content" :style="{ paddingBottom: `${safeBottom + 32}px` }">
                 <view class="hero">
                     <view class="hero__titleRow">
-                        <view class="hero__name">{{ job.title }}</view>
-                        <view class="hero__type">【全职】</view>
+                        <view class="hero__name">{{ company.name }}</view>
+                        <view v-if="company.industry || company.scale" class="hero__type">
+                            {{ company.industry }} {{ company.scale }}
+                        </view>
                     </view>
                     <view class="hero__metaRow">
                         <wd-tag size="small" plain custom-class="metaTag metaTag--pin">
                             <FaIcon name="location-dot" :size="22" style="margin-right: 4rpx" />
-                            {{ job.city }}·{{ job.district }}
+                            {{ job.city }}{{ job.district ? '·' + job.district : '' }}
                         </wd-tag>
-                        <wd-tag size="small" plain custom-class="metaTag">{{ job.education }}</wd-tag>
-                        <wd-tag size="small" plain custom-class="metaTag">{{ job.exp }}</wd-tag>
+                        <wd-tag v-if="company.industry" size="small" plain custom-class="metaTag">{{ company.industry }}</wd-tag>
+                        <wd-tag v-if="company.scale" size="small" plain custom-class="metaTag">{{ company.scale }}</wd-tag>
                     </view>
                 </view>
 
@@ -55,7 +57,7 @@
                 <view class="section">
                     <view class="section__title">工作地址</view>
                     <view class="photoCard" hover-class="photoCard--pressed" @click="handlePhotoTap">
-                        <image v-if="company.cover" class="photoCard__img" :src="company.cover" mode="aspectFill" />
+                        <image v-if="company.logoUrl" class="photoCard__img" :src="company.logoUrl" mode="aspectFill" />
                         <view v-else class="photoCard__ph" />
                     </view>
 
@@ -66,21 +68,24 @@
                         </view>
                     </view>
                     <view class="intro" :class="{ 'intro--clamp': !introExpanded }">
-                        {{ company.intro }}
+                        {{ company.description || '暂无简介' }}
                     </view>
                 </view>
 
                 <view class="section">
                     <view class="section__title">公司地址</view>
-                    <view class="addressRow" hover-class="addressRow--pressed" @click="handleAddressTap">
+                    <view v-if="company.address" class="addressRow" hover-class="addressRow--pressed" @click="handleAddressTap">
                         <view class="addressRow__text">{{ company.address }}</view>
                         <FaIcon name="chevron-right" :size="28" color="rgba(0, 0, 0, 0.28)" />
+                    </view>
+                    <view v-else class="addressRow">
+                        <view class="addressRow__text" style="color: var(--app-text-muted)">暂无地址信息</view>
                     </view>
                 </view>
 
                 <view class="section">
                     <view class="section__title">在招职位</view>
-                    <view class="jobList">
+                    <view v-if="openJobs.length > 0" class="jobList">
                         <view v-for="item in openJobs" :key="item.id" class="jobCard" hover-class="jobCard--pressed"
                             @click="handleJobTap(item.id)">
                             <view class="jobCard__top">
@@ -98,6 +103,9 @@
                             </view>
                         </view>
                     </view>
+                    <view v-else class="jobList--empty">
+                        <view class="emptyText">暂无在招职位</view>
+                    </view>
                 </view>
             </view>
         </scroll-view>
@@ -107,11 +115,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useToast } from '@wot-ui/ui/components/wd-toast'
 import HeaderNav from '@/components/HeaderNav.vue'
+import { apiGetCompanyDetail } from '@/api/index'
+import { apiGetJobs } from '@/api/index'
+import { goPageJobDetail } from '@/utils/route'
 
 const toast = useToast('companyToast')
+
+const degreeMap: Record<string, string> = {
+    ANY: '学历不限', JUNIOR_HIGH: '初中', HIGH_SCHOOL: '高中',
+    ASSOCIATE: '大专', BACHELOR: '本科', MASTER: '硕士', DOCTOR: '博士',
+}
 
 type ScoreLevel = {
     key: string
@@ -128,19 +144,27 @@ type JobCard = {
     time: string
 }
 
+const companyId = ref('')
+const loading = ref(false)
+
 const job = ref({
-    title: '前台财务',
-    city: '成都',
-    district: '高新区',
-    education: '学历不限',
-    exp: '2年',
+    title: '',
+    city: '',
+    district: '',
+    education: '',
+    exp: '',
 })
 
 const company = ref({
-    name: '连锁餐厅',
-    cover: '',
-    address: '成都市·高新区·泰达时代中心一号楼14层',
-    intro: '公司概况这里可以包括注册时间,注册资本,公司性质,技术力量规模,员工人数,员工素质等;',
+    name: '',
+    logoUrl: '',
+    address: '',
+    description: '',
+    industry: '',
+    scale: '',
+    province: '',
+    city: '',
+    district: '',
 })
 
 const levelLabels = ref<ScoreLevel[]>([
@@ -179,16 +203,78 @@ const toggleIntro = () => {
     introExpanded.value = !introExpanded.value
 }
 
-const openJobs = ref<JobCard[]>([
-    { id: 'j1', title: '会计主管', salary: '10K-12K', district: '青羊区', education: '学历不限', gender: '男女不限', time: '12:26发布' },
-    { id: 'j2', title: '工业设计师', salary: '7K-9K', district: '青羊区', education: '学历不限', gender: '男女不限', time: '12:26发布' },
-])
-
+const openJobs = ref<JobCard[]>([])
 const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
+
+const formatRelativeTime = (iso: string) => {
+    const diff = Date.now() - new Date(iso).getTime()
+    const days = Math.floor(diff / 86400000)
+    if (days === 0) return '今天'
+    if (days < 7) return `${days}天前`
+    return new Date(iso).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }) + '发布'
+}
+
+const fetchCompanyDetail = async (id: string) => {
+    loading.value = true
+    try {
+        const res: any = await apiGetCompanyDetail(id)
+        company.value = {
+            name: res.name || '',
+            logoUrl: res.logoUrl || '',
+            address: res.address || '',
+            description: res.description || '',
+            industry: res.industry || '',
+            scale: res.scale || '',
+            province: res.province || '',
+            city: res.city || '',
+            district: res.district || '',
+        }
+        // 更新 job 的显示信息（如果公司有相关信息）
+        job.value = {
+            title: res.name || '',
+            city: res.city || '',
+            district: res.district || '',
+            education: '',
+            exp: '',
+        }
+    } catch (e) {
+        toast.error('获取公司信息失败')
+    } finally {
+        loading.value = false
+    }
+}
+
+const fetchOpenJobs = async (id: string) => {
+    try {
+        const res: any = await apiGetJobs({ companyId: id, page: 1, limit: 20 })
+        openJobs.value = (res.items || []).map((j: any) => ({
+            id: j.id,
+            title: j.title,
+            salary: j.salaryRange || '薪资面议',
+            district: j.district || j.city || '',
+            education: degreeMap[j.minDegree] || '学历不限',
+            gender: j.nature === 'PART_TIME' ? '兼职' : j.nature === 'INTERNSHIP' ? '实习' : '全职',
+            time: formatRelativeTime(j.createdAt),
+        }))
+    } catch (e) {
+        // 静默处理
+    }
+}
+
+onMounted(() => {
+    const pages = getCurrentPages()
+    const page = pages[pages.length - 1] as any
+    const id = page?.options?.id || ''
+    companyId.value = id
+    if (id) {
+        fetchCompanyDetail(id)
+        fetchOpenJobs(id)
+    }
+})
 
 const handlePhotoTap = () => toast.info('查看图片')
 const handleAddressTap = () => toast.info('打开地图')
-const handleJobTap = (id: string) => toast.info(`职位：${id}`)
+const handleJobTap = (id: string) => goPageJobDetail(id)
 </script>
 
 <style scoped lang="scss">
@@ -215,8 +301,9 @@ const handleJobTap = (id: string) => toast.info(`职位：${id}`)
 
 .hero__titleRow {
     display: flex;
-    align-items: baseline;
-    gap: 14rpx;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8rpx;
 }
 
 .hero__name {
@@ -227,8 +314,8 @@ const handleJobTap = (id: string) => toast.info(`职位：${id}`)
 }
 
 .hero__type {
-    font-size: 30rpx;
-    font-weight: 900;
+    font-size: 26rpx;
+    font-weight: 700;
     color: var(--app-text-secondary);
 }
 
@@ -494,6 +581,19 @@ const handleJobTap = (id: string) => toast.info(`职位：${id}`)
     display: flex;
     flex-direction: column;
     gap: 16rpx;
+}
+
+.jobList--empty {
+    margin-top: 14rpx;
+    padding: 40rpx 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emptyText {
+    font-size: 26rpx;
+    color: var(--app-text-muted);
 }
 
 .jobCard {

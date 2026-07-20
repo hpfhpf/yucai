@@ -138,6 +138,9 @@ export const apiDeleteProjectExp = (id: string) =>
 export const apiSearchCompanies = (params?: { keyword?: string; limit?: number }) =>
   request({ url: '/companies', method: 'GET', data: params } as any);
 
+export const apiGetCompanyDetail = (id: string) =>
+  request({ url: `/companies/${id}`, method: 'GET' } as any);
+
 export const apiCreateCompany = (data: {
   name: string; industry?: string; scale?: string; city?: string; province?: string;
 }) => request({ url: '/companies', method: 'POST', data } as any);

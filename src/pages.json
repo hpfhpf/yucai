@@ -392,26 +392,23 @@
       "style": {}
     },
     {
-      "path": "pages/seeker/resumeCenter/workCertification",
-      "type": "page",
-      "style": {
-        "navigationStyle": "custom",
-        "navigationBarTitleText": ""
-      },
-      "needLogin": true
-    },
-    {
       "path": "pages/seeker/tailorResume/detail",
       "type": "page",
-      "style": {
-        "navigationStyle": "custom",
-        "navigationBarTitleText": ""
-      }
+      "style": {}
     },
     {
       "path": "pages/seeker/tailorResume/index",
       "type": "page",
       "style": {}
+    },
+    {
+      "path": "pages/seeker/resumeCenter/workCertification/index",
+      "type": "page",
+      "needLogin": true,
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": ""
+      }
     }
   ],
   "globalStyle": {

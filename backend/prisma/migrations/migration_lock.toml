@@ -1,0 +1,10 @@
+{
+  "version": "20250720000000_add_company_cover",
+  "migrations": [
+    {
+      "id": "20250720000000_add_company_cover",
+      "name": "add_company_cover",
+      "checksum": "manual"
+    }
+  ]
+}

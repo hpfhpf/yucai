@@ -394,11 +394,6 @@ const menuIcon = (key: string) => menuIconMap[key] || 'circle'
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(180deg, rgba(30, 91, 255, 0.14), rgba(30, 91, 255, 0.06));
-}
-
-.quick__icon--favorite {
-    background: linear-gradient(180deg, rgba(255, 122, 0, 0.16), rgba(255, 122, 0, 0.06));
 }
 
 .quick__label {
