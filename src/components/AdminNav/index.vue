@@ -11,12 +11,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import FaIcon from '@/components/FaIcon/index.vue'
 
 type NavItem = { key: string; label: string; icon: string; path: string }
 
-const props = withDefaults(defineProps<{ activeIndex: number }>(), { activeIndex: 0 })
+const props = withDefaults(
+    defineProps<{ activeIndex?: number; activeKey?: string }>(),
+    { activeIndex: -1, activeKey: '' }
+)
 
 const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
 
@@ -41,8 +44,16 @@ const superItems: NavItem[] = [
 
 const items = isSuper ? superItems : baseItems
 
+const activeIndex = computed(() => {
+    if (props.activeKey) {
+        const i = items.findIndex(it => it.key === props.activeKey)
+        if (i >= 0) return i
+    }
+    return props.activeIndex
+})
+
 const handleTap = (item: NavItem, idx: number) => {
-    if (idx === props.activeIndex) return
+    if (idx === activeIndex.value) return
     uni.reLaunch({ url: item.path as any })
 }
 </script>

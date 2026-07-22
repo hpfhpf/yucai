@@ -15,6 +15,7 @@
             <view class="uSearch">
                 <wd-input v-model="keyword" placeholder="搜索手机号 / 昵称" custom-class="uSearch__input"
                     :no-border="true" confirm-type="search" @confirm="onSearch" />
+                <view class="uSearch__btn" @click="onSearch">搜索</view>
             </view>
         </view>
 
@@ -61,7 +62,7 @@
             </view>
         </scroll-view>
 
-        <AdminNav :active-index="2" />
+        <AdminNav active-key="users" />
     </view>
 </template>
 
@@ -168,12 +169,31 @@ onMounted(() => load(true))
 }
 .hero__hello { flex: 1; text-align: center; }
 
-.uSearch { margin-top: 18rpx; }
+.uSearch {
+    margin-top: 18rpx;
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+}
 :deep(.uSearch__input) {
     background: rgba(255, 255, 255, 0.92);
     border-radius: 40rpx;
     padding: 0 26rpx;
     height: 72rpx;
+    flex: 1;
+}
+.uSearch__btn {
+    flex-shrink: 0;
+    height: 72rpx;
+    padding: 0 32rpx;
+    border-radius: 40rpx;
+    background: #fff;
+    color: #1e5bff;
+    font-size: 28rpx;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .uTabs {

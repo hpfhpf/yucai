@@ -285,7 +285,11 @@
     {
       "path": "pages/recruiter/resumeDetail",
       "type": "page",
-      "style": {}
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": ""
+      },
+      "needLogin": true
     },
     {
       "path": "pages/recruiter/talents",
@@ -334,6 +338,15 @@
     },
     {
       "path": "pages/recommendation/position/index",
+      "type": "page",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": ""
+      },
+      "needLogin": true
+    },
+    {
+      "path": "pages/recruiter/aiJobPosting/index",
       "type": "page",
       "style": {
         "navigationStyle": "custom",
@@ -404,16 +417,16 @@
     {
       "path": "pages/seeker/resumeCenter/workCertification/index",
       "type": "page",
-      "needLogin": true,
       "style": {
         "navigationStyle": "custom",
         "navigationBarTitleText": ""
-      }
+      },
+      "needLogin": true
     }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "russ-uniapp",
+    "navigationBarTitleText": "",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8"
   },

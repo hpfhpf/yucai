@@ -4,9 +4,9 @@
             <HeaderNav title="首页" type="seeker-index" theme="FFF" />
             <view class="search">
                 <view class="search__icon" />
-                <wd-input v-model="keyword" class="search__input" auto-complete="off" placeholder="请输入关键词、职位"
-                    :focus="inputFocused" @confirm="handleSearchConfirm" @input="handleSearchInput"
-                    @focus="handleSearchFocus" @blur="handleSearchBlur" />
+                <wd-input v-model="keyword" compact custom-class="search__input" auto-complete="off"
+                    placeholder="请输入关键词、职位" :focus="inputFocused" @confirm="handleSearchConfirm"
+                    @input="handleSearchInput" @focus="handleSearchFocus" @blur="handleSearchBlur" />
                 <view v-if="keyword" class="search__clear" @click="handleClearInput">
                     <FaIcon name="circle-xmark" :size="30" color="rgba(255,255,255,0.85)" />
                 </view>
@@ -433,12 +433,22 @@ const degreeMap: Record<string, string> = {
     transform: rotate(45deg);
 }
 
-.search__input {
+:deep(.search__input) {
     flex: 1;
-    height: 78rpx;
-    font-size: 28rpx;
-    background: transparent;
     min-width: 0;
+    height: 78rpx;
+    background: transparent !important;
+
+    .wd-input__inner {
+        height: 78rpx;
+        font-size: 28rpx;
+        color: #fff !important;
+    }
+
+    .uni-input-placeholder {
+        color: rgba(255, 255, 255, 0.72) !important;
+        font-size: 28rpx;
+    }
 }
 
 .search__clear {

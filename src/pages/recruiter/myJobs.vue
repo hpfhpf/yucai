@@ -1,7 +1,5 @@
 <template>
     <view class="page">
-        <HeaderNav title="我的职位" type="show-back" theme="000" />
-
         <scroll-view class="scroll" scroll-y>
             <view class="list" :style="{ paddingBottom: `${safeBottom + 40}px` }">
                 <wd-empty v-if="!loading && !jobs.length" tip="暂无已发布职位" />
@@ -39,7 +37,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useToast } from '@wot-ui/ui/components/wd-toast'
-import HeaderNav from '@/components/HeaderNav.vue'
 import { apiGetMyPostedJobs, apiCloseJob } from '@/api/index'
 
 const toast = useToast('myJobsToast')

@@ -3,10 +3,16 @@ import { ConfigService } from '@nestjs/config';
 import {
   DiagnoseStreamEvent,
   DiagnosisResult,
+  GenerateJobMessage,
+  GenerateJobResult,
   JobSummary,
   ResumeSnapshot,
 } from './ai.types';
-import { buildDiagnosePrompt, buildTailorPrompt } from './ai.prompt';
+import {
+  buildDiagnosePrompt,
+  buildGenerateJobPrompt,
+  buildTailorPrompt,
+} from './ai.prompt';
 
 @Injectable()
 export class AiService {
@@ -69,6 +75,12 @@ export class AiService {
   async tailor(resume: ResumeSnapshot, job: JobSummary, issues?: unknown): Promise<ResumeSnapshot> {
     const text = await this.callMessages(buildTailorPrompt(resume, job, issues), 3072);
     return this.extractJson<ResumeSnapshot>(text);
+  }
+
+  // 生成职位：根据招聘者的自然语言需求生成结构化职位草稿，一次性返回 JSON
+  async generateJob(prompt: string, history?: GenerateJobMessage[]): Promise<GenerateJobResult> {
+    const text = await this.callMessages(buildGenerateJobPrompt(prompt, history), 3072);
+    return this.extractJson<GenerateJobResult>(text);
   }
 
   // 诊断：流式。通过 onEvent 回调逐步下发进度，最终返回结果。

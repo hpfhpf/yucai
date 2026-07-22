@@ -426,36 +426,60 @@ const onScroll = () => { }
 
 .chat__inputWrap {
     flex: 1 1 auto;
-    height: 72rpx;
+    min-width: 0;
+    height: 76rpx;
     border-radius: var(--app-radius-pill);
     background: rgba(0, 0, 0, 0.04);
     display: flex;
     align-items: center;
-    padding: 0 20rpx;
+    padding: 0 24rpx;
     border: 1px solid rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
 }
 
 :deep(.chatInput) {
-    flex: 1;
+    flex: 1 1 auto;
+    width: 100%;
     background: transparent !important;
 
-    .wd-input__inner {
-        height: 72rpx;
-        font-size: 26rpx;
-        font-weight: 700;
-        color: var(--app-text-primary) !important;
+    // 去掉 wd-input 默认的边框、内边距、背景与 cell 高度
+    &.wd-input,
+    .wd-input__body {
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
     }
 
+    // 去掉底部分隔线
+    &::after,
+    .wd-input__body::after {
+        display: none !important;
+        border: none !important;
+    }
+
+    .wd-input__value,
+    .wd-input__inner {
+        height: 76rpx;
+        line-height: 76rpx;
+        padding: 0 !important;
+        font-size: 27rpx;
+        font-weight: 700;
+        color: var(--app-text-primary) !important;
+        background: transparent !important;
+    }
+
+    .wd-input__placeholder,
     .uni-input-placeholder {
         color: var(--app-text-muted) !important;
-        font-size: 26rpx;
+        font-size: 27rpx;
         font-weight: 700;
+        line-height: 76rpx;
     }
 }
 
 .chat__sendBtn {
-    height: 72rpx;
-    padding: 0 28rpx;
+    height: 76rpx;
+    padding: 0 30rpx;
     border-radius: var(--app-radius-pill);
     background: linear-gradient(135deg, rgba(30, 91, 255, 1), rgba(78, 133, 255, 1));
     color: #fff;

@@ -43,6 +43,7 @@ interface NavigateToOptions {
        "/pages/recommendation/detail/company" |
        "/pages/recommendation/detail/index" |
        "/pages/recommendation/position/index" |
+       "/pages/recruiter/aiJobPosting/index" |
        "/pages/seeker/resumeCenter/Information" |
        "/pages/seeker/resumeCenter/education" |
        "/pages/seeker/resumeCenter/index" |
@@ -51,8 +52,7 @@ interface NavigateToOptions {
        "/pages/seeker/resumeCenter/selfDesc" |
        "/pages/seeker/tailorResume/detail" |
        "/pages/seeker/tailorResume/index" |
-       "/pages/seeker/resumeCenter/workCertification/index" |
-       "/pages/seeker/resumeCenter/workCertification";
+       "/pages/seeker/resumeCenter/workCertification/index";
 }
 interface RedirectToOptions extends NavigateToOptions {}
 

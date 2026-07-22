@@ -9,9 +9,6 @@
                     <view class="hero__role">运营工作台</view>
                     <view class="hero__name">企业审核</view>
                 </view>
-                <view class="hero__avatar">
-                    <FaIcon name="building-shield" :size="38" color="#fff" />
-                </view>
             </view>
         </view>
 
@@ -26,6 +23,7 @@
                 <FaIcon name="magnifying-glass" :size="30" color="rgba(0,0,0,0.32)" />
                 <wd-input v-model="keyword" compact custom-class="search__input" auto-complete="off"
                     placeholder="搜索企业名称" @confirm="onSearch" />
+                <view class="search__btn" hover-class="search__btn--pressed" @click="onSearch">搜索</view>
             </view>
         </view>
 
@@ -34,7 +32,8 @@
                 <view v-if="list.length" class="cardList">
                     <view v-for="c in list" :key="c.id" class="coCard">
                         <view class="coCard__head">
-                            <view class="coCard__name">{{ c.name }}</view>
+                            <view class="coCard__name" hover-class="coCard__name--pressed"
+                                @click="goDetail(c)">{{ c.name }}</view>
                             <view class="tag" :class="c.isVerified ? 'tag--on' : 'tag--off'">
                                 {{ c.isVerified ? '已认证' : '未认证' }}
                             </view>
@@ -88,6 +87,7 @@ import AdminNav from '@/components/AdminNav/index.vue'
 import FaIcon from '@/components/FaIcon/index.vue'
 import Empty from '@/components/Empty/index.vue'
 import { apiAdminListCompanies, apiAdminVerifyCompany } from '@/api/admin'
+import { goPageCompanyDetail } from '@/utils/route'
 
 interface Company {
     id: string
@@ -159,6 +159,8 @@ const setTab = (key: string) => {
 }
 
 const onSearch = () => fetchList(true)
+
+const goDetail = (c: Company) => goPageCompanyDetail(c.id)
 
 const loadMore = () => {
     if (!noMore.value && !loading.value) fetchList()
@@ -233,8 +235,37 @@ onMounted(() => fetchList(true))
     padding: 8rpx 24rpx;
     box-shadow: 0 6rpx 18rpx rgba(30, 60, 140, 0.06);
 
-    :deep(.search__input) { flex: 1; background: transparent; }
 }
+
+:deep(.search__input) {
+    flex: 1;
+    min-width: 0;
+    height: 72rpx;
+    background: transparent !important;
+
+    .wd-input__inner {
+        height: 72rpx;
+        font-size: 28rpx;
+        color: var(--app-text-primary) !important;
+    }
+
+    .uni-input-placeholder {
+        color: rgba(0, 0, 0, 0.4) !important;
+        font-size: 28rpx;
+    }
+}
+
+.search__btn {
+    flex-shrink: 0;
+    padding: 10rpx 30rpx;
+    border-radius: 14rpx;
+    background: #1e5bff;
+    color: #fff;
+    font-size: 26rpx;
+    font-weight: 700;
+}
+
+.search__btn--pressed { opacity: 0.8; }
 
 .cardList {
     display: flex;
@@ -262,6 +293,8 @@ onMounted(() => fetchList(true))
     font-weight: 800;
     color: var(--app-text-primary);
 }
+
+.coCard__name--pressed { opacity: 0.6; }
 
 .tag {
     padding: 6rpx 18rpx;

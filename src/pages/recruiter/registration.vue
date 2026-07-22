@@ -70,7 +70,7 @@
                             class="notFound">
                             <view class="notFound__text">未找到"{{ companyKeyword }}"</view>
                             <view class="notFound__btn" hover-class="notFound__btn--pressed"
-                                @click="showCreatePanel = true">
+                                @click="openCreatePanel">
                                 + 创建该企业
                             </view>
                         </view>
@@ -209,6 +209,13 @@ const selectCompany = (c: any) => {
     showCreatePanel.value = false
 }
 
+// 打开「创建新企业」面板：清除已选企业，避免二者同时存在造成歧义，并用搜索词预填名称
+const openCreatePanel = () => {
+    clearCompany()
+    if (!newCompany.value.name.trim()) newCompany.value.name = companyKeyword.value.trim()
+    showCreatePanel.value = true
+}
+
 const clearCompany = () => {
     selectedCompany.value = null
     delete (form.value as any).companyId
@@ -244,23 +251,26 @@ const handleNext = async () => {
         if (err) { toast.info(err); return }
         submitting.value = true
         try {
+            // 解析企业 ID：若展开了「创建新企业」面板，先创建企业再取其 ID
+            let companyId = (form.value as any).companyId
+            if (showCreatePanel.value) {
+                const res: any = await apiCreateCompany({
+                    name: newCompany.value.name.trim(),
+                    city: newCompany.value.city.trim(),
+                    industry: newCompany.value.industry.trim() || undefined,
+                })
+                companyId = res?.id
+            }
+
             if (isEditMode.value) {
-                // 编辑模式：仅更新联系人信息，不修改企业
+                // 编辑模式：更新联系人信息，并在有变更时同步绑定企业
                 await apiUpdateRecruiterProfile({
                     realName: form.value.realName.trim(),
+                    companyId: companyId || undefined,
                     department: form.value.department.trim(),
                     contactPhone: form.value.contactPhone.trim() || undefined,
                 })
             } else {
-                let companyId = (form.value as any).companyId
-                if (showCreatePanel.value) {
-                    const res: any = await apiCreateCompany({
-                        name: newCompany.value.name.trim(),
-                        city: newCompany.value.city.trim(),
-                        industry: newCompany.value.industry.trim() || undefined,
-                    })
-                    companyId = res?.id
-                }
                 await apiRegisterRecruiter({
                     realName: form.value.realName.trim(),
                     companyId,

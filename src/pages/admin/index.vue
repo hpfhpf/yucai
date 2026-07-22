@@ -6,9 +6,6 @@
                     <view class="hero__role">{{ isSuper ? '超级管理员' : '运营工作台' }}</view>
                     <view class="hero__name">{{ userName }}，欢迎回来</view>
                 </view>
-                <view class="hero__avatar">
-                    <FaIcon :name="isSuper ? 'user-shield' : 'user-gear'" :size="40" color="#fff" />
-                </view>
             </view>
         </view>
 

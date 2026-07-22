@@ -75,44 +75,14 @@
                         </view>
                     </view>
                     <view class="inviteDivider" />
-                    <view class="inviteRow">
+                    <view class="inviteRow inviteRow--tap" hover-class="inviteRow--pressed"
+                        @click="showTimePicker = true">
                         <view class="inviteRow__label">面试时间</view>
-                        <view class="inviteRow__field">
-                            <wd-cell title="" value="" center is-link custom-class="datePickerCell"
-                                @click="showTimePicker = true">
-                                <template #right-icon>
-                                    <FaIcon name="calendar" :size="22" color="rgba(0,0,0,0.28)" />
-                                </template>
-                                <view class="datePickerCell__value">
-                                    {{ inviteForm.time || '请选择面试时间' }}
-                                </view>
-                            </wd-cell>
-                        </view>
-                    </view>
-                    <view class="inviteDivider" />
-                    <view class="inviteRow inviteRow--upload">
-                        <view class="inviteRow__label">图片识别</view>
-                        <view class="inviteRow__field">
-                            <view class="ocrUpload">
-                                <wd-upload v-model:file-list="ocrFiles" action="" :limit="1" :auto-upload="false"
-                                    accept="image" :size-type="['compressed']" :source-type="['album', 'camera']"
-                                    custom-evoke-class="ocrUpload__trigger" custom-preview-class="ocrUpload__preview"
-                                    @change="onOcrUploadChange">
-                                    <view class="ocrUpload__empty">
-                                        <view class="ocrUpload__camera">
-                                            <FaIcon name="camera" :size="32" color="#fff" />
-                                        </view>
-                                        <view class="ocrUpload__text">上传面试通知截图</view>
-                                    </view>
-                                </wd-upload>
-                                <view v-if="ocrFiles.length" class="ocrUpload__btn"
-                                    :class="{ 'ocrUpload__btn--loading': ocrLoading }"
-                                    @click="handleOcrRecognize">
-                                    <FaIcon v-if="!ocrLoading" name="scan-line" :size="20" />
-                                    <wd-loading v-else size="18px" />
-                                    {{ ocrLoading ? '识别中' : '提取时间' }}
-                                </view>
-                            </view>
+                        <view class="inviteRow__field inviteRow__field--picker">
+                            <text class="pickerValue" :class="{ 'pickerValue--placeholder': !inviteForm.time }">
+                                {{ inviteForm.time || '请选择面试时间' }}
+                            </text>
+                            <FaIcon name="chevron-right" :size="20" color="rgba(0,0,0,0.24)" />
                         </view>
                     </view>
                     <view class="inviteDivider" />
@@ -152,8 +122,7 @@ import { onMounted, ref } from 'vue'
 import { useToast } from '@wot-ui/ui/components/wd-toast'
 import HeaderNav from '@/components/HeaderNav.vue'
 import BottomNav from '@/components/BottomNav.vue'
-import { apiGetRecruiterDeliveries, apiUpdateDeliveryStatus, apiSendInvite, apiGetMyPostedJobs, apiOcrRecognize } from '@/api/index'
-import { parseTimeText } from '@/utils/timeParser'
+import { apiGetRecruiterDeliveries, apiUpdateDeliveryStatus, apiSendInvite, apiGetMyPostedJobs } from '@/api/index'
 
 const toast = useToast('resumeCenterToast')
 const safeBottom = ref(uni.getWindowInfo().safeAreaInsets?.bottom || 0)
@@ -250,12 +219,21 @@ const viewResume = (d: DeliveryCard) => {
     uni.navigateTo({ url: `/pages/recruiter/resumeDetail?userId=${d.seekerUserId}` as any })
 }
 
-const rejectDelivery = async (d: DeliveryCard) => {
-    try {
-        await apiUpdateDeliveryStatus(d.id, { status: 'REJECTED' })
-        d.status = 'REJECTED'
-        toast.success('已标记为不合适')
-    } catch { /* ignore */ }
+const rejectDelivery = (d: DeliveryCard) => {
+    uni.showModal({
+        title: '确认',
+        content: `确定将候选人「${d.name}」标记为不合适？`,
+        confirmText: '标记不合适',
+        confirmColor: '#fa5151',
+        success: async (res) => {
+            if (!res.confirm) return
+            try {
+                await apiUpdateDeliveryStatus(d.id, { status: 'REJECTED' })
+                d.status = 'REJECTED'
+                toast.success('已标记为不合适')
+            } catch { /* ignore */ }
+        },
+    })
 }
 
 // 面试邀请
@@ -269,16 +247,10 @@ const myJobs = ref<any[]>([])
 const showTimePicker = ref(false)
 const timePickerValue = ref<number>(0)
 
-// OCR
-type UploadFileItem = { uid: number; url: string; status?: string; [key: string]: any }
-const ocrFiles = ref<UploadFileItem[]>([])
-const ocrLoading = ref(false)
-
 const openInviteModal = async (d: DeliveryCard) => {
     inviteTarget.value = d
     inviteForm.value = { position: d.jobTitle, time: '', location: '', note: '' }
     showInvite.value = true
-    ocrFiles.value = []
     if (!myJobs.value.length) {
         try {
             const res: any = await apiGetMyPostedJobs({ page: 1, limit: 20 })
@@ -296,39 +268,6 @@ const handleTimeConfirm = ({ value }: { value: number }) => {
     const hour = String(date.getHours()).padStart(2, '0')
     const minute = String(date.getMinutes()).padStart(2, '0')
     inviteForm.value.time = `${year}-${month}-${day} ${hour}:${minute}`
-}
-
-const onOcrUploadChange = ({ fileList }: { fileList: UploadFileItem[] }) => {
-    ocrFiles.value = fileList
-}
-
-const handleOcrRecognize = async () => {
-    if (!ocrFiles.value.length || ocrLoading.value) return
-    const file = ocrFiles.value[0]
-    if (!file.url) {
-        toast.info('图片上传未完成')
-        return
-    }
-
-    ocrLoading.value = true
-    try {
-        const res: any = await apiOcrRecognize(file.url)
-        if (res.text) {
-            const parseResult = parseTimeText(res.text)
-            if (parseResult.success) {
-                inviteForm.value.time = parseResult.formatted
-                toast.success('时间识别成功')
-            } else {
-                toast.info('未能识别到时间，请手动输入')
-            }
-        } else {
-            toast.info('图片识别失败，请手动输入')
-        }
-    } catch {
-        toast.info('图片识别失败，请检查网络或手动输入')
-    } finally {
-        ocrLoading.value = false
-    }
 }
 
 const sendInvite = async () => {
@@ -624,10 +563,12 @@ const sendInvite = async () => {
     padding-bottom: 16rpx;
 }
 
-.inviteRow--upload {
-    align-items: flex-start;
-    padding-top: 16rpx;
-    padding-bottom: 16rpx;
+.inviteRow--tap {
+    transition: background-color 0.18s ease;
+}
+
+.inviteRow--pressed {
+    background: rgba(30, 91, 255, 0.05);
 }
 
 .inviteRow__label {
@@ -641,6 +582,23 @@ const sendInvite = async () => {
 .inviteRow__field {
     flex: 1 1 auto;
     min-width: 0;
+}
+
+.inviteRow__field--picker {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8rpx;
+}
+
+.pickerValue {
+    font-size: 26rpx;
+    color: var(--app-text-primary);
+    text-align: right;
+}
+
+.pickerValue--placeholder {
+    color: var(--app-text-muted);
 }
 
 :deep(.inviteInput) {
@@ -679,89 +637,6 @@ const sendInvite = async () => {
     }
 }
 
-:deep(.datePickerCell) {
-    height: 88rpx;
-    background: transparent !important;
-    border: none !important;
-
-    .wd-cell__body {
-        flex: 1;
-    }
-
-    .wd-cell__right-icon {
-        margin-left: 8rpx;
-    }
-}
-
-.datePickerCell__value {
-    font-size: 26rpx;
-    color: rgba(0, 0, 0, 0.72);
-    text-align: right;
-}
-
-.ocrUpload {
-    width: 100%;
-}
-
-.ocrUpload__trigger {
-    width: 100%;
-    height: 160rpx;
-    border-radius: var(--app-radius-md);
-    background: rgba(248, 250, 255, 0.9);
-    border: 2rpx dashed rgba(30, 91, 255, 0.25);
-}
-
-.ocrUpload__preview {
-    width: 100%;
-    height: 160rpx;
-    border-radius: var(--app-radius-md);
-    overflow: hidden;
-}
-
-.ocrUpload__empty {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10rpx;
-}
-
-.ocrUpload__camera {
-    width: 72rpx;
-    height: 72rpx;
-    border-radius: 50%;
-    background: linear-gradient(180deg, rgba(30, 91, 255, 0.2), rgba(30, 91, 255, 0.4));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ocrUpload__text {
-    font-size: 24rpx;
-    color: rgba(0, 0, 0, 0.36);
-}
-
-.ocrUpload__btn {
-    margin-top: 14rpx;
-    height: 64rpx;
-    border-radius: var(--app-radius-pill);
-    background: rgba(30, 91, 255, 0.06);
-    border: 1px solid rgba(30, 91, 255, 0.14);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10rpx;
-    font-size: 26rpx;
-    font-weight: 800;
-    color: rgba(30, 91, 255, 0.88);
-}
-
-.ocrUpload__btn--loading {
-    opacity: 0.7;
-}
-
 .inviteDivider {
     height: 1px;
     background: var(--app-line);
@@ -782,6 +657,37 @@ const sendInvite = async () => {
 
 // 分类横向滚动样式
 :deep(.resumeTabs) {
+    // 让 tabs 撑满剩余高度，并把导航条以下区域设为透明，
+    // 使内容区统一显示 --app-bg 背景（白卡片浮于其上），消除白/紫分割
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+
+    .wd-tabs__container {
+        flex: 1 1 auto;
+        min-height: 0;
+        background: transparent;
+    }
+
+    .wd-tabs__body {
+        height: 100%;
+        background: transparent;
+    }
+
+    .wd-tab {
+        height: 100%;
+        background: transparent;
+    }
+
+    // 激活态的 tab 内容撑满高度，让内部滚动列表铺到底部
+    .wd-tab__body:not(.wd-tab__body--inactive) {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
     .wd-tabs__nav--wrap {
         overflow-x: auto;
         overflow-y: hidden;

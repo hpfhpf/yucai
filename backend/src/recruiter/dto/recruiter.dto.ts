@@ -20,6 +20,7 @@ export class RegisterRecruiterDto {
 
 export class UpdateRecruiterDto {
   @IsOptional() @IsString() realName?: string;
+  @IsOptional() @IsString() companyId?: string;
   @IsOptional() @IsString() department?: string;
   @IsOptional() @IsString() contactPhone?: string;
 }

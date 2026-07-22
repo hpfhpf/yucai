@@ -8,9 +8,6 @@
                 <view class="hero__hello">
                     <view class="hero__name">实名审核</view>
                 </view>
-                <view class="hero__avatar">
-                    <FaIcon name="id-card" :size="36" color="#fff" />
-                </view>
             </view>
         </view>
 

@@ -196,7 +196,7 @@ const handleQuickTap = (key: QuickKey) => {
         else if (key === 'companies') uni.navigateTo({ url: '/pages/admin/companies' as any })
         else uni.showToast({ title: '功能开发中', icon: 'none' })
     } else if (isRecruiter.value) {
-        if (key === 'postJob') uni.navigateTo({ url: '/pages/recruiter/jobPosting' as any })
+        if (key === 'postJob') uni.navigateTo({ url: '/pages/recruiter/aiJobPosting/index' as any })
         else if (key === 'resumeCenter') uni.navigateTo({ url: '/pages/recruiter/resumeCenter' as any })
         else if (key === 'myJobs') uni.navigateTo({ url: '/pages/recruiter/myJobs' as any })
         else uni.showToast({ title: '功能开发中', icon: 'none' })
@@ -209,7 +209,7 @@ const handleQuickTap = (key: QuickKey) => {
 }
 
 const handleMenuTap = (key: MenuKey) => {
-    if (key === 'workCert') uni.navigateTo({ url: '/pages/seeker/resumeCenter/workCertification' as any })
+    if (key === 'workCert') uni.navigateTo({ url: '/pages/seeker/resumeCenter/workCertification/index' as any })
     else if (key === 'setting') goPageSetting()
     else if (key === 'interview') uni.navigateTo({ url: '/pages/mine/interview' as any })
     else if (key === 'credit') uni.navigateTo({ url: '/pages/mine/credit' as any })

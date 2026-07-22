@@ -47,12 +47,19 @@ export class RecruiterService {
     const recruiter = await this.prisma.recruiter.findUnique({ where: { userId } });
     if (!recruiter) throw new NotFoundException('未注册招聘官档案');
 
+    if (dto.companyId) {
+      const company = await this.prisma.company.findUnique({ where: { id: dto.companyId } });
+      if (!company) throw new NotFoundException('企业不存在，请先创建或搜索企业');
+    }
+
     return this.prisma.recruiter.update({
       where: { userId },
       data: {
         realName: dto.realName,
         department: dto.department,
         contactPhone: dto.contactPhone,
+        // 仅在传入 companyId 时更新绑定企业，避免误清空
+        ...(dto.companyId ? { companyId: dto.companyId } : {}),
       },
       include: { company: { select: { id: true, name: true, isVerified: true } } },
     });

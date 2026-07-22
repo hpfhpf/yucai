@@ -155,7 +155,7 @@ export const apiRegisterRecruiter = (data: {
 }) => request({ url: '/recruiter/profile', method: 'POST', data } as any);
 
 export const apiUpdateRecruiterProfile = (data: {
-  realName?: string; department?: string; contactPhone?: string;
+  realName?: string; companyId?: string; department?: string; contactPhone?: string;
 }) => request({ url: '/recruiter/profile', method: 'PUT', data } as any);
 
 export const apiGetSeekers = (params?: { page?: number; limit?: number; city?: string; keyword?: string }) =>
@@ -209,31 +209,3 @@ export const apiRequestWorkCertWithCertifier = (workExpId: string, certifierId?:
 export const postApiSelectByConditions = (data: any) =>
   request({ url: '/api3/video/participants/selectByConditions', method: 'POST', data } as any);
 
-// ===== OCR =====
-export const apiOcrRecognize = (filePath: string) => {
-  return new Promise<any>((resolve, reject) => {
-    uni.uploadFile({
-      url: `${__VITE_SERVER_BASEURL__}/ocr/recognize`,
-      filePath,
-      name: 'image',
-      header: {
-        Authorization: `Bearer ${uni.getStorageSync('token') || ''}`,
-      },
-      success(res) {
-        try {
-          const data = JSON.parse(res.data);
-          if (data.success) {
-            resolve(data);
-          } else {
-            reject(data);
-          }
-        } catch {
-          reject({ message: '识别结果解析失败' });
-        }
-      },
-      fail(err) {
-        reject(err);
-      },
-    });
-  });
-};

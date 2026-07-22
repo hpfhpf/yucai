@@ -11,6 +11,7 @@ import { CompaniesModule } from './companies/companies.module';
 import { MessagesModule } from './messages/messages.module';
 import { AdminModule } from './admin/admin.module';
 import { OcrModule } from './ocr/ocr.module';
+import { AiModule } from './ai/ai.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -36,6 +37,7 @@ import { AppService } from './app.service';
     MessagesModule,
     AdminModule,
     OcrModule,
+    AiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

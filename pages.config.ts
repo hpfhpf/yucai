@@ -214,6 +214,14 @@ export default defineUniPages({
       },
     },
     {
+      path: "pages/recruiter/aiJobPosting/index",
+      needLogin: true,
+      style: {
+        navigationStyle: "custom",
+        navigationBarTitleText: "",
+      },
+    },
+    {
       path: "pages/recruiter/newsDetail",
       style: {
         navigationStyle: "custom",
@@ -246,6 +254,14 @@ export default defineUniPages({
     },
     {
       path: "pages/recruiter/talents",
+      needLogin: true,
+      style: {
+        navigationStyle: "custom",
+        navigationBarTitleText: "",
+      },
+    },
+    {
+      path: "pages/recruiter/resumeDetail",
       needLogin: true,
       style: {
         navigationStyle: "custom",
@@ -317,7 +333,7 @@ export default defineUniPages({
       },
     },
     {
-      path: "pages/seeker/resumeCenter/workCertification",
+      path: "pages/seeker/resumeCenter/workCertification/index",
       needLogin: true,
       style: {
         navigationStyle: "custom",
@@ -327,7 +343,7 @@ export default defineUniPages({
   ],
   globalStyle: {
     navigationBarTextStyle: "black",
-    navigationBarTitleText: "russ-uniapp",
+    navigationBarTitleText: "",
     navigationBarBackgroundColor: "#F8F8F8",
     backgroundColor: "#F8F8F8",
   },
